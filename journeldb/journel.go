@@ -1,6 +1,7 @@
 package journeldb
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
@@ -15,10 +16,61 @@ type journel struct {
 }
 
 func (jdb *journel) Reproduce(ReaderFunc func(name string) io.Reader, checkpoint string, revlessthan uint64) uint64 {
-	return 0
+	var reader io.Reader
+	if checkpoint != "" {
+		reader = ReaderFunc(checkpoint)
+	}
+	var rev uint64
+	for {
+		if reader == nil {
+			s := strconv.FormatUint(rev, 10)
+			reader = ReaderFunc(s)
+		}
+		if reader == nil {
+			break
+		}
+		linereader := bufio.NewReader(reader)
+		for {
+			reading, err := linereader.ReadString('\n')
+			if err != nil {
+				break
+			}
+			if strings.HasPrefix(reading, "#REV") {
+				stlo := strings.Split(reading, " ")
+				io, err := strconv.ParseUint(stlo[1], 10, 64)
+				if err != nil {
+					panic(err)
+				}
+				rev = io
+				if rev > revlessthan {
+					return rev
+				}
+			}
+			jdb.reproduceline(reading)
+		}
+
+	}
+	return rev
+}
+func (jdb *journel) reproduceline(obj string) {
+	stlo := strings.Split(obj, " ")
+	switch stlo[0] {
+	case "WriteValue":
+		jdb.ldb.WriteValue(stlo[1], stlo[2])
+	case "WriteValueDelete":
+		jdb.ldb.WriteValueDelete(stlo[1])
+	case "WriteListValueAdd":
+		jdb.ldb.WriteListValueAdd(stlo[1], stlo[2])
+	case "WriteListValueRemove":
+		jdb.ldb.WriteListValueRemove(stlo[1], stlo[2])
+	case "WriteValueIncrease":
+		jdb.ldb.WriteValueIncrease(stlo[1])
+	case "WriteValueDecrease":
+		jdb.ldb.WriteValueDecrease(stlo[1])
+	}
 }
 
-func (jdb *journel) CreateCheckpoint(wr io.Writer) {
+func (jdb *journel) CreateCheckpoint(wr io.Writer, rev uint64) {
 	i := jdb.ldb.ledb.NewIterator(nil, nil)
 	for i.Next() {
 		if strings.HasPrefix(string(i.Key()), "rev:") {
@@ -26,6 +78,8 @@ func (jdb *journel) CreateCheckpoint(wr io.Writer) {
 		}
 		fmt.Fprintf(wr, "WriteValue %s %s\n", string(i.Key()), string(i.Value()))
 	}
+	s := strconv.FormatUint(rev, 10)
+	fmt.Fprintf(wr, "#REVCHECKPOINT %s\n", s)
 }
 func (jdb *journel) CreateRev(rev uint64, wr io.Writer) {
 	s := strconv.FormatUint(rev, 10)
