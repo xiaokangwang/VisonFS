@@ -31,6 +31,9 @@ func (jdb *JournelDB) GetValueList(name string) []string {
 func Reproduce(ReaderFunc func(name string) io.Reader, checkpoint string, revlessthan uint64, localdb string) *JournelDB {
 	return nil
 }
+func (jdb *JournelDB) CreateCheckpoint(wr io.Writer, rev uint64) {
+}
+func (jdb *JournelDB) CreateRev(rev uint64, wr io.Writer) {}
 func Open(localdb string) *JournelDB {
 	return nil
 }
