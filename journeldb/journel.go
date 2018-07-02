@@ -42,7 +42,7 @@ func (jdb *journel) Reproduce(ReaderFunc func(name string) io.Reader, checkpoint
 					panic(err)
 				}
 				rev = io
-				if rev > revlessthan {
+				if rev > revlessthan && revlessthan != 0 {
 					return rev
 				}
 			}
@@ -54,6 +54,11 @@ func (jdb *journel) Reproduce(ReaderFunc func(name string) io.Reader, checkpoint
 }
 func (jdb *journel) reproduceline(obj string) {
 	stlo := strings.Split(obj, " ")
+	stlo[1], _ = url.QueryUnescape(stlo[1])
+	if len(stlo) == 3 {
+		stlo[2], _ = url.QueryUnescape(stlo[2])
+	}
+
 	switch stlo[0] {
 	case "WriteValue":
 		jdb.ldb.WriteValue(stlo[1], stlo[2])
