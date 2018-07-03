@@ -73,5 +73,8 @@ func (t *Transform) Reverse(b [][]byte, c string) []byte {
 	return outBuffer.Bytes()
 }
 func (t *Transform) NeedAtLeast(c string) int {
+	if c == t.LtTCookie {
+		return 1
+	}
 	return t.rs.datashard
 }
