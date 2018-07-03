@@ -37,9 +37,13 @@ func (ps *PendingSync) SyncMeta() {
 		ps.jd.CreateRev(uploading, &syncbuf)
 		uploading++
 	}
+	var syncbufenc bytes.Buffer
+	by := syncbuf.Bytes()
+	syncbufr := bytes.NewReader(by)
+	ps.tf.Encrypt(&syncbufenc, syncbufr)
 
 	fname := ps.cacheDir + "/meta/" + ps.metadomain + "_rev_" + strconv.FormatUint(uploadingFirst, 10)
-	ps.QueueFileNetworkUpload(fname, syncbuf.Bytes())
+	ps.QueueFileNetworkUpload(fname, syncbufenc.Bytes())
 
 }
 func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
