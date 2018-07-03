@@ -50,6 +50,7 @@ func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
 	cache.SetDirty(fname)
 	f, err := os.Create(fname)
 	io.Copy(f, bytes.NewBuffer(content))
+	f.Close()
 	//TODO:Queue Upload
 	cache.RemoveDirty(fname)
 }
