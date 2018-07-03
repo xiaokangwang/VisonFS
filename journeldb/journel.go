@@ -81,6 +81,9 @@ func (jdb *journel) CreateCheckpoint(wr io.Writer, rev uint64) {
 		if strings.HasPrefix(string(i.Key()), "rev:") {
 			continue
 		}
+		if strings.HasPrefix(string(i.Key()), "local") {
+			continue
+		}
 		fmt.Fprintf(wr, "WriteValue %s %s\n", string(i.Key()), string(i.Value()))
 	}
 	s := strconv.FormatUint(rev, 10)

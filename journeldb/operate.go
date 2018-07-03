@@ -3,6 +3,7 @@ package journeldb
 import (
 	"io"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -29,6 +30,9 @@ func (jdb *JournelDB) WriteValue(name, value string) {
 		panic(nil)
 	}
 	jdb.jdb.WriteValue(name, value)
+	if strings.HasPrefix(name, "local") {
+		return
+	}
 	jdb.jdb.ldb.WriteValue(name, value)
 }
 func (jdb *JournelDB) WriteValueDelete(name string) {
@@ -36,6 +40,9 @@ func (jdb *JournelDB) WriteValueDelete(name string) {
 		panic(nil)
 	}
 	jdb.jdb.WriteValueDelete(name)
+	if strings.HasPrefix(name, "local") {
+		return
+	}
 	jdb.jdb.ldb.WriteValueDelete(name)
 }
 func (jdb *JournelDB) WriteListValueAdd(name, element string) {
@@ -43,6 +50,9 @@ func (jdb *JournelDB) WriteListValueAdd(name, element string) {
 		panic(nil)
 	}
 	jdb.jdb.WriteListValueAdd(name, element)
+	if strings.HasPrefix(name, "local") {
+		return
+	}
 	jdb.jdb.ldb.WriteListValueAdd(name, element)
 }
 func (jdb *JournelDB) WriteListValueRemove(name, element string) {
@@ -50,6 +60,9 @@ func (jdb *JournelDB) WriteListValueRemove(name, element string) {
 		panic(nil)
 	}
 	jdb.jdb.WriteListValueRemove(name, element)
+	if strings.HasPrefix(name, "local") {
+		return
+	}
 	jdb.jdb.ldb.WriteListValueRemove(name, element)
 }
 func (jdb *JournelDB) WriteValueIncrease(name string) {
@@ -57,6 +70,9 @@ func (jdb *JournelDB) WriteValueIncrease(name string) {
 		panic(nil)
 	}
 	jdb.jdb.WriteValueIncrease(name)
+	if strings.HasPrefix(name, "local") {
+		return
+	}
 	jdb.jdb.ldb.WriteValueIncrease(name)
 }
 func (jdb *JournelDB) WriteValueDecrease(name string) {
@@ -64,6 +80,9 @@ func (jdb *JournelDB) WriteValueDecrease(name string) {
 		panic(nil)
 	}
 	jdb.jdb.WriteValueIncrease(name)
+	if strings.HasPrefix(name, "local") {
+		return
+	}
 	jdb.jdb.ldb.WriteValueIncrease(name)
 }
 
