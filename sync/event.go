@@ -54,6 +54,8 @@ func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
 	//TODO:Queue Upload
 	cache.RemoveDirty(fname)
 }
-func (ps *PendingSync) QueueFileNetworkDownload0(fname string) ([]byte, error) {}
-func (ps *PendingSync) CheckoutMeta(revlessthan uint64)                        {}
-func (ps *PendingSync) CreateCheckpoint()                                      {}
+func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
+
+}
+func (ps *PendingSync) CheckoutMeta(revlessthan uint64) {}
+func (ps *PendingSync) CreateCheckpoint()               {}
