@@ -3,6 +3,7 @@ package transform
 import (
 	"bytes"
 	"strconv"
+	"strings"
 )
 
 type Transform struct {
@@ -48,8 +49,29 @@ func (t *Transform) Advance(f []byte) ([][]byte, string) {
 	}
 }
 func (t *Transform) Reverse(b [][]byte, c string) []byte {
-	panic(nil)
+	if c == t.LtTCookie {
+		for k := range b {
+			if b[k] != nil {
+				var transBuffer bytes.Buffer
+				t.ep.PassReverse(&transBuffer, bytes.NewBuffer(b[k]))
+				return transBuffer.Bytes()
+			}
+			panic(nil)
+		}
+	}
+	cookieo := strings.Split(c, ";")
+	len, _ := strconv.Atoi(cookieo[1])
+	for k := range b {
+		if b[k] != nil {
+			var transBuffer bytes.Buffer
+			t.ep.PassReverse(&transBuffer, bytes.NewBuffer(b[k]))
+			b[k] = transBuffer.Bytes()
+		}
+	}
+	var outBuffer bytes.Buffer
+	t.rs.PassReverse(b, len, &outBuffer)
+	return outBuffer.Bytes()
 }
 func (t *Transform) NeedAtLeast(c string) int {
-	panic(nil)
+	return t.rs.datashard
 }
