@@ -12,6 +12,9 @@ func isExist(path string) bool {
 	}
 	return false
 }
+func IsExist(path string) bool {
+	return isExist(path)
+}
 func IsDirty(path string) bool {
 	return isExist(path + ".dirty")
 }
