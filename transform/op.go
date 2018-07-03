@@ -2,6 +2,7 @@ package transform
 
 import (
 	"bytes"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -77,4 +78,10 @@ func (t *Transform) NeedAtLeast(c string) int {
 		return 1
 	}
 	return t.rs.datashard
+}
+func (t *Transform) Encrypt(w io.Writer, r io.Reader) {
+	t.ep.PassForword(w, r)
+}
+func (t *Transform) Decrypt(w io.Writer, r io.Reader) {
+	t.ep.PassReverse(w, r)
 }
