@@ -109,6 +109,9 @@ func (jdb *JournelDB) CreateCheckpoint(wr io.Writer, rev uint64) {
 func (jdb *JournelDB) CreateRev(rev uint64, wr io.Writer) {
 	jdb.jdb.CreateRev(rev, wr)
 }
+func (jdb *JournelDB) CurrentRev() uint64 {
+	return jdb.currentRev
+}
 func Open(localdb string) *JournelDB {
 	d := &JournelDB{}
 	ldb := d.localdbOpenDatabase(localdb)
