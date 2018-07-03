@@ -4,8 +4,8 @@ import "github.com/xiaokangwang/VisonFS/journeldb"
 import "github.com/xiaokangwang/VisonFS/transform"
 
 type FileTree struct {
-	jd journeldb.JournelDB
-	tf transform.Transform
+	jd *journeldb.JournelDB
+	tf *transform.Transform
 }
 
 func (ft *FileTree) Ls(path string)                 {}
