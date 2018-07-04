@@ -83,28 +83,29 @@ func main() {
 		log.Fatalf("Unable to retrieve Drive client: %v", err)
 	}
 	/*
-		r, err := srv.Files.List().PageSize(10).
-			Fields("nextPageToken, files(id, name)").Do()
+		f, err := os.Open("bootstrap-4.1.1-dist.zip")
 		if err != nil {
-			log.Fatalf("Unable to retrieve files: %v", err)
+			panic(err)
 		}
-		fmt.Println("Files:")
-		if len(r.Files) == 0 {
-			fmt.Println("No files found.")
-		} else {
-			for _, i := range r.Files {
-				fmt.Printf("%s (%s)\n", i.Name, i.Id)
-			}
-		}*/
-	f, err := os.Open("bootstrap-4.1.1-dist.zip")
+		var file drive.File
+		file.Name = "bootstrap-4.1.1-dist.zip"
+		_, err = srv.Files.Create(&file).Media(f).Fields().Do()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(file)*/
+	fn := "bootstrap-4.1.1-dist.zip"
+	r, err := srv.Files.List().Q("name = '" + fn + "'").PageSize(10).
+		Fields("nextPageToken, files(id, name)").Do()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Unable to retrieve files: %v", err)
 	}
-	var file drive.File
-	file.Name = "bootstrap-4.1.1-dist.zip"
-	_, err = srv.Files.Create(&file).Media(f).Fields().Do()
-	if err != nil {
-		panic(err)
+	fmt.Println("Files:")
+	if len(r.Files) == 0 {
+		fmt.Println("No files found.")
+	} else {
+		for _, i := range r.Files {
+			fmt.Printf("%s (%s)\n", i.Name, i.Id)
+		}
 	}
-	fmt.Println(file)
 }
