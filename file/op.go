@@ -21,7 +21,7 @@ type FileTree struct {
 
 func NewFileTree(tf *transform.Transform,
 	pf *protectedFolder.DelegatedAccess,
-	sy *sync.PendingSync) *FileTree {
+	sy *sync.PendingSync, gitctli *gitctl.Gitctl) *FileTree {
 	return &FileTree{tf: tf, pf: pf, sy: sy}
 }
 
