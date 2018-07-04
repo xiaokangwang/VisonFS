@@ -16,12 +16,18 @@ type Instance struct {
 	transformi       *transform.Transform
 }
 
-func (ins *Instance) Prepare() {
+func (ins *Instance) Prepare(gitpath, pubdir, prvdir, prvpass string) {
 	//instance all dep
+	ins.gitctli = gitctl.NewGitctl(gitpath)
+	ins.transformi = transform.NewTransform(pubdir, prvdir, prvpass)
+	ins.networki = network.NewNetworkTaskQueue()
+	ins.synci = sync.NewPendingSync(ins.transformi, ins.networki)
+	ins.protectedFolderi = protectedFolder.NewDelegatedAccess(ins.transformi)
+	ins.filei = file.NewFileTree(ins.transformi, ins.protectedFolderi, ins.synci)
+	//Look for dirty
+	ins.synci.UploadDirty()
 }
-func (ins *Instance) Launch() {
-
-}
-func (ins *Instance) LoadConfig() {
+func (ins *Instance) Launch() *file.FileTree {
+	return ins.filei
 
 }
