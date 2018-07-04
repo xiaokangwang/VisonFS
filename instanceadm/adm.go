@@ -29,5 +29,4 @@ func (ins *Instance) Prepare(gitpath, pubdir, prvdir, prvpass string) {
 }
 func (ins *Instance) Launch() *file.FileTree {
 	return ins.filei
-
 }
