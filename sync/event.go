@@ -3,11 +3,11 @@ package sync
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"os"
-	"strconv"
+	"sync"
 
 	"github.com/xiaokangwang/VisonFS/cache"
-	"github.com/xiaokangwang/VisonFS/journeldb"
 	"github.com/xiaokangwang/VisonFS/transform"
 )
 
@@ -17,8 +17,9 @@ type PendingSync struct {
 	cacheusing        uint64
 	cacheCap          uint64
 	LastUploadMetaRev uint64
-	jd                *journeldb.JournelDB
-	tf                *transform.Transform
+	//jd                *journeldb.JournelDB
+	tf   *transform.Transform
+	crlo sync.RWMutex
 }
 
 func (ps *PendingSync) BlobUpload(content []byte) string {
@@ -27,6 +28,8 @@ func (ps *PendingSync) BlobUpload(content []byte) string {
 func (ps *PendingSync) BlobGet(hash string) []byte {
 
 }
+
+/*
 func (ps *PendingSync) SyncMeta() {
 	syncto := ps.jd.CurrentRev()
 
@@ -45,17 +48,29 @@ func (ps *PendingSync) SyncMeta() {
 	fname := ps.cacheDir + "/meta/" + ps.metadomain + "_rev_" + strconv.FormatUint(uploadingFirst, 10)
 	ps.QueueFileNetworkUpload(fname, syncbufenc.Bytes())
 
-}
+}*/
 func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
 	cache.SetDirty(fname)
+	ps.crlo.Lock()
 	f, err := os.Create(fname)
 	io.Copy(f, bytes.NewBuffer(content))
 	f.Close()
+	ps.crlo.Unlock()
 	//TODO:Queue Upload
 	cache.RemoveDirty(fname)
 }
 func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
+	if cache.IsExist(fname) {
+		ps.crlo.RLock()
+		c, e := ioutil.ReadFile(fname)
+		ps.crlo.RUnlock()
+		return c, e
+	}
+	//TODO：DownloadFile
 
+	//Write cache
+	ps.crlo.Lock()
+	ps.crlo.Unlock()
 }
 func (ps *PendingSync) CheckoutMeta(revlessthan uint64) {}
 func (ps *PendingSync) CreateCheckpoint()               {}
