@@ -8,9 +8,7 @@ type FileTree struct {
 	tf *transform.Transform
 }
 
-func (ft *FileTree) Ls(path string)                 {}
-func (ft *FileTree) GetFileMeta(path string) string {}
-func (ft *FileTree) SetFileMeta(path, meta string)  {}
+func (ft *FileTree) Ls(path string) {}
 
 //Block=16MB
 //May Block if file is not ready
