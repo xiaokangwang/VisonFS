@@ -26,7 +26,9 @@ type DelegatedAccess struct {
 const keySize = 32
 const nonceSize = 24
 
-//const key = "rgsf8o1lqjbttgzn08ssqcbooh3y2yfleige"
+func NewDelegatedAccess(tf *transform.Transform) *DelegatedAccess {
+	return &DelegatedAccess{tf: tf}
+}
 
 func (da *DelegatedAccess) ReadToken(t string) string {
 	key := da.key

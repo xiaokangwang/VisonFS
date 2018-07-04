@@ -23,6 +23,15 @@ Dup -> gpg encryption
 
 const Threshold = 1024 * 1024 * 4
 
+func NewTransform(pubdir, prvdir, prvpass string) *Transform {
+	dr := &Transform{GtTCookie: "GT", LtTCookie: "LT"}
+	dr.ep.privatekeyPass = prvpass
+	dr.ep.privatekeyPath = prvdir
+	dr.ep.publickeyPath = pubdir
+	dr.rs.datashard = 4
+	dr.rs.parityshard = 2
+	return dr
+}
 func (t *Transform) Advance(f []byte) ([][]byte, string) {
 	var transformMethod string
 	if len(f) > Threshold {

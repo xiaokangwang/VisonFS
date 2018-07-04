@@ -27,6 +27,10 @@ type PendingSync struct {
 	crlo sync.RWMutex
 }
 
+func NewPendingSync(tf *transform.Transform, nw *network.NetworkTaskQueue) *PendingSync {
+	return &PendingSync{tf: tf, nw: nw}
+}
+
 func (ps *PendingSync) BlobUpload(content []byte) string {
 	//transform
 	out, cookie := ps.tf.Advance(content)
@@ -111,4 +115,7 @@ func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
 	ps.crlo.Lock()
 	ps.crlo.Unlock()
 	return ou.Content, nil
+}
+func (ps *PendingSync) UploadDirty() {
+
 }

@@ -29,3 +29,7 @@ func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) Netwo
 func (ntq *NetworkTaskQueue) EnqueueListTask(task NetworkListTask) NetworkListTaskResult {
 	panic(nil)
 }
+
+func NewNetworkTaskQueue() *NetworkTaskQueue {
+	return &NetworkTaskQueue{}
+}

@@ -17,6 +17,12 @@ type FileTree struct {
 	sy *sync.PendingSync
 }
 
+func NewFileTree(tf *transform.Transform,
+	pf *protectedFolder.DelegatedAccess,
+	sy *sync.PendingSync) *FileTree {
+	return &FileTree{tf: tf, pf: pf, sy: sy}
+}
+
 func (ft *FileTree) Ls(path string) ([]os.FileInfo, error) {
 	fl, err := ft.pf.ListFile(path)
 	if err != nil {

@@ -7,6 +7,10 @@ type Gitctl struct {
 	current *git.Repository
 }
 
+func NewGitctl(path string) *Gitctl {
+	return &Gitctl{path: path}
+}
+
 func (gic *Gitctl) NewVerison() {
 	gic.ensureCurrent()
 	wc, err := gic.current.Worktree()
