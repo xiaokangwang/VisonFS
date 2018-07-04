@@ -33,5 +33,6 @@ func main() {
 	case "push":
 	case "pull":
 	case "purge":
+		fi.Purge()
 	}
 }
