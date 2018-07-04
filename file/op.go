@@ -21,7 +21,12 @@ func (ft *FileTree) Ls(path string) ([]os.FileInfo, error) {
 		return nil, err
 	}
 	for k := range fl {
-		fl[k] = &tranFileinfo{inner: fl[k]}
+		if fl[k].Name() != "dir" {
+			fl[k] = &tranFileinfo{inner: fl[k]}
+		} else {
+			fl[k] = nil
+		}
+
 	}
 	return fl, nil
 }
@@ -58,8 +63,10 @@ func (ft *FileTree) GetFileBlock(path string, blockid int) []byte {
 //May Block if writethrough is true
 func (ft *FileTree) SetFileBlock(path string, blockid int, content []byte, writethrough bool) {}
 
-func (ft *FileTree) Mkdir(path, ele string) {}
-func (ft *FileTree) Rm(path, ele string)    {}
+func (ft *FileTree) Mkdir(path, ele string) {
+	ft.pf.WriteFile(path+"/"+ele+"/dir", []byte("dir"))
+}
+func (ft *FileTree) Rm(path, ele string) {}
 func (ft *FileTree) GetSize(path string) int64 {
 	f, _ := ft.pf.ReadFile(path + "/size")
 	s, _ := strconv.ParseInt(string(f), 10, 64)
