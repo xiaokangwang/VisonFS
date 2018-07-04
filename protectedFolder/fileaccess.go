@@ -13,11 +13,14 @@ import (
 
 	"golang.org/x/crypto/nacl/secretbox"
 	"golang.org/x/crypto/sha3"
+
+	"github.com/xiaokangwang/VisonFS/transform"
 )
 
 type DelegatedAccess struct {
 	root string
 	key  string
+	tf   *transform.Transform
 }
 
 const keySize = 32
@@ -66,8 +69,13 @@ func (da *DelegatedAccess) ReadFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return ioutil.ReadFile(dirv + "/" + fn)
+	fc, err := ioutil.ReadFile(dirv + "/" + fn)
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	da.tf.Decrypt(&buf, bytes.NewReader(fc))
+	return buf.Bytes(), err
 }
 func (da *DelegatedAccess) toPath(path string) (string, string) {
 	dir := strings.Split(path, "/")
@@ -85,7 +93,7 @@ func (da *DelegatedAccess) WriteFile(path string, filecont []byte) error {
 	if err != nil {
 		return err
 	}
-	io.Copy(f, bytes.NewReader(filecont))
+	da.tf.Encrypt(f, bytes.NewReader(filecont))
 	f.Close()
 	return nil
 }
