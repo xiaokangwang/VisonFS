@@ -83,11 +83,17 @@ func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
 	cache.SetDirty(fname)
 	ps.crlo.Lock()
 	f, err := os.Create(fname)
+	if err != nil {
+		panic(err)
+	}
 	io.Copy(f, bytes.NewBuffer(content))
 	f.Close()
 	ps.crlo.Unlock()
 	//TODO:Queue Upload
-	ps.nw.EnqueueUploadTask(task)
+	var dt network.NetworkUploadTask
+	dt.Filename = fname
+	dt.Content = content
+	ps.nw.EnqueueUploadTask(dt)
 	cache.RemoveDirty(fname)
 }
 func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
@@ -104,6 +110,5 @@ func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
 	//Write cache
 	ps.crlo.Lock()
 	ps.crlo.Unlock()
-
-	return
+	return ou.Content, nil
 }

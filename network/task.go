@@ -5,7 +5,7 @@ type NetworkTaskQueue struct {
 
 type NetworkUploadTask struct {
 	Filename string
-	content  []byte
+	Content  []byte
 }
 type NetworkUploadTaskResult struct {
 }
@@ -13,7 +13,7 @@ type NetworkDownloadTask struct {
 	Filename string
 }
 type NetworkDownloadTaskResult struct {
-	content []byte
+	Content []byte
 }
 type NetworkListTask struct {
 	Dir string
@@ -23,7 +23,7 @@ type NetworkListTaskResult struct {
 }
 
 func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {}
-func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkUploadTask) NetworkDownloadTaskResult {
+func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) NetworkDownloadTaskResult {
 	panic(nil)
 }
 func (ntq *NetworkTaskQueue) EnqueueListTask(task NetworkListTask) NetworkListTaskResult {
