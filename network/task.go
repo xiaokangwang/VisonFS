@@ -22,6 +22,10 @@ type NetworkListTaskResult struct {
 	Files []string
 }
 
-func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask)   {}
-func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkUploadTask) {}
-func (ntq *NetworkTaskQueue) EnqueueListTask(task NetworkListTask)       {}
+func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {}
+func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkUploadTask) NetworkDownloadTaskResult {
+	panic(nil)
+}
+func (ntq *NetworkTaskQueue) EnqueueListTask(task NetworkListTask) NetworkListTaskResult {
+	panic(nil)
+}

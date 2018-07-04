@@ -98,8 +98,12 @@ func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
 		return c, e
 	}
 	//TODO：DownloadFile
-	ps.nw.EnqueueDownloadTask(task)
+	var dt network.NetworkDownloadTask
+	dt.Filename = fname
+	ou := ps.nw.EnqueueDownloadTask(dt)
 	//Write cache
 	ps.crlo.Lock()
 	ps.crlo.Unlock()
+
+	return
 }
