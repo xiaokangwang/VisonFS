@@ -26,7 +26,8 @@ func (ft *FileTree) Ls(path string) ([]os.FileInfo, error) {
 }
 
 type tranFileinfo struct {
-	inner os.FileInfo
+	inner    os.FileInfo
+	truesize int64
 }
 
 func (df *tranFileinfo) IsDir() bool        { return !strings.HasSuffix(df.inner.Name(), ".d") }
@@ -39,7 +40,13 @@ func (df *tranFileinfo) Name() string {
 	}
 	return df.inner.Name()
 }
-func (df *tranFileinfo) Size() int64      { return df.inner.Size() }
+func (df *tranFileinfo) Size() int64 {
+	if !df.IsDir() {
+		ddn := df.inner.Name()
+		return df.truesize
+	}
+	return df.inner.Size()
+}
 func (df *tranFileinfo) Sys() interface{} { return df.inner.Sys() }
 
 //Block=16MB
