@@ -100,5 +100,3 @@ func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
 	ps.crlo.Lock()
 	ps.crlo.Unlock()
 }
-func (ps *PendingSync) CheckoutMeta(revlessthan uint64) {}
-func (ps *PendingSync) CreateCheckpoint()               {}
