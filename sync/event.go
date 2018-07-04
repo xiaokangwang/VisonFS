@@ -10,18 +10,20 @@ import (
 	"sync"
 
 	"github.com/xiaokangwang/VisonFS/cache"
+	"github.com/xiaokangwang/VisonFS/network"
 	"github.com/xiaokangwang/VisonFS/transform"
 	"golang.org/x/crypto/sha3"
 )
 
 type PendingSync struct {
-	cacheDir          string
-	metadomain        string
-	cacheusing        uint64
-	cacheCap          uint64
-	LastUploadMetaRev uint64
+	cacheDir   string
+	metadomain string
+	cacheusing uint64
+	cacheCap   uint64
+
 	//jd                *journeldb.JournelDB
 	tf   *transform.Transform
+	nw   *network.NetworkTaskQueue
 	crlo sync.RWMutex
 }
 
@@ -85,6 +87,7 @@ func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
 	f.Close()
 	ps.crlo.Unlock()
 	//TODO:Queue Upload
+	ps.nw.EnqueueUploadTask(task)
 	cache.RemoveDirty(fname)
 }
 func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
@@ -95,7 +98,7 @@ func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
 		return c, e
 	}
 	//TODO：DownloadFile
-
+	ps.nw.EnqueueDownloadTask(task)
 	//Write cache
 	ps.crlo.Lock()
 	ps.crlo.Unlock()
