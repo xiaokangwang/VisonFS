@@ -6,15 +6,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/xiaokangwang/VisonFS/gitctl"
 	"github.com/xiaokangwang/VisonFS/protectedFolder"
 	"github.com/xiaokangwang/VisonFS/sync"
 	"github.com/xiaokangwang/VisonFS/transform"
 )
 
 type FileTree struct {
-	tf *transform.Transform
-	pf *protectedFolder.DelegatedAccess
-	sy *sync.PendingSync
+	tf      *transform.Transform
+	pf      *protectedFolder.DelegatedAccess
+	sy      *sync.PendingSync
+	gitctli *gitctl.Gitctl
 }
 
 func NewFileTree(tf *transform.Transform,
@@ -80,13 +82,16 @@ func (ft *FileTree) GetFileBlock(path string, blockid int) []byte {
 func (ft *FileTree) SetFileBlock(path string, blockid int, content []byte, writethrough bool) {
 	tracker := ft.sy.BlobUpload(content)
 	ft.pf.WriteFile(path+".d/"+strconv.Itoa(blockid), []byte(tracker))
+	ft.gitctli.NewVerison()
 }
 
 func (ft *FileTree) Mkdir(path, ele string) {
 	ft.pf.WriteFile(path+"/"+ele+"/dir", []byte("dir"))
+	ft.gitctli.NewVerison()
 }
 func (ft *FileTree) Rm(path, ele string) {
 	ft.pf.RemoveFile(path + "/" + ele)
+	ft.gitctli.NewVerison()
 }
 func (ft *FileTree) GetSize(path string) int64 {
 	f, _ := ft.pf.ReadFile(path + "/size")
@@ -96,4 +101,5 @@ func (ft *FileTree) GetSize(path string) int64 {
 func (ft *FileTree) SetSize(path string, size int64) {
 	s := strconv.FormatInt(size, 10)
 	ft.pf.WriteFile(path+"/size", []byte(s))
+	ft.gitctli.NewVerison()
 }
