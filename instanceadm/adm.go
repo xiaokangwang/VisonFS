@@ -23,7 +23,7 @@ func (ins *Instance) Prepare(gitpath, pubdir, prvdir, prvpass string) {
 	ins.networki = network.NewNetworkTaskQueue()
 	ins.synci = sync.NewPendingSync(ins.transformi, ins.networki)
 	ins.protectedFolderi = protectedFolder.NewDelegatedAccess(ins.transformi)
-	ins.filei = file.NewFileTree(ins.transformi, ins.protectedFolderi, ins.synci)
+	ins.filei = file.NewFileTree(ins.transformi, ins.protectedFolderi, ins.synci, ins.gitctli)
 	//Look for dirty
 	ins.synci.UploadDirty()
 }
