@@ -33,6 +33,10 @@ func (df *tranFileinfo) IsDir() bool        { return !strings.HasSuffix(df.inner
 func (df *tranFileinfo) ModTime() time.Time { return df.inner.ModTime() }
 func (df *tranFileinfo) Mode() os.FileMode  { return df.inner.Mode() }
 func (df *tranFileinfo) Name() string {
+	if !df.IsDir() {
+		ddn := df.inner.Name()
+		return ddn[:len(ddn)-3]
+	}
 	return df.inner.Name()
 }
 func (df *tranFileinfo) Size() int64      { return df.inner.Size() }
