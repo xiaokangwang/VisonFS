@@ -73,7 +73,7 @@ func main() {
 	}
 
 	// If modifying these scopes, delete your previously saved client_secret.json.
-	config, err := google.ConfigFromJSON(b, drive.DriveMetadataReadonlyScope)
+	config, err := google.ConfigFromJSON(b, drive.DriveScope)
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
@@ -82,18 +82,29 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to retrieve Drive client: %v", err)
 	}
-
-	r, err := srv.Files.List().PageSize(10).
-		Fields("nextPageToken, files(id, name)").Do()
-	if err != nil {
-		log.Fatalf("Unable to retrieve files: %v", err)
-	}
-	fmt.Println("Files:")
-	if len(r.Files) == 0 {
-		fmt.Println("No files found.")
-	} else {
-		for _, i := range r.Files {
-			fmt.Printf("%s (%s)\n", i.Name, i.Id)
+	/*
+		r, err := srv.Files.List().PageSize(10).
+			Fields("nextPageToken, files(id, name)").Do()
+		if err != nil {
+			log.Fatalf("Unable to retrieve files: %v", err)
 		}
+		fmt.Println("Files:")
+		if len(r.Files) == 0 {
+			fmt.Println("No files found.")
+		} else {
+			for _, i := range r.Files {
+				fmt.Printf("%s (%s)\n", i.Name, i.Id)
+			}
+		}*/
+	f, err := os.Open("bootstrap-4.1.1-dist.zip")
+	if err != nil {
+		panic(err)
 	}
+	var file drive.File
+	file.Name = "bootstrap-4.1.1-dist.zip"
+	_, err = srv.Files.Create(&file).Media(f).Fields().Do()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(file)
 }
