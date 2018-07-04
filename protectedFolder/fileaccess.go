@@ -108,6 +108,15 @@ func (da *DelegatedAccess) ListFile(path string) ([]os.FileInfo, error) {
 	})
 	return fni, nil
 }
+func (da *DelegatedAccess) RemoveFile(path string) error {
+	pn, fn := da.toPath(path)
+	dirv := da.root + "/" + pn
+	err := os.Remove(dirv + "/" + fn)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 type decryptFileinfo struct {
 	inner os.FileInfo

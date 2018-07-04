@@ -79,7 +79,9 @@ func (ft *FileTree) SetFileBlock(path string, blockid int, content []byte, write
 func (ft *FileTree) Mkdir(path, ele string) {
 	ft.pf.WriteFile(path+"/"+ele+"/dir", []byte("dir"))
 }
-func (ft *FileTree) Rm(path, ele string) {}
+func (ft *FileTree) Rm(path, ele string) {
+	ft.pf.RemoveFile(path + "/" + ele)
+}
 func (ft *FileTree) GetSize(path string) int64 {
 	f, _ := ft.pf.ReadFile(path + "/size")
 	s, _ := strconv.ParseInt(string(f), 10, 64)
