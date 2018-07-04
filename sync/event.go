@@ -47,7 +47,11 @@ func (ps *PendingSync) BlobGet(hash string) []byte {
 		if k == 0 {
 			cookiei = cookie[0]
 		} else {
-			file = append(file, ps.BlobGet(cookie[k]))
+			fc, err := ps.QueueFileNetworkDownload(cookie[k])
+			if err != nil {
+				panic(err)
+			}
+			file = append(file, fc)
 		}
 	}
 	return ps.tf.Reverse(file, cookiei)
