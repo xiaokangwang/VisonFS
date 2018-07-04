@@ -2,6 +2,7 @@ package file
 
 import (
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -42,7 +43,6 @@ func (df *tranFileinfo) Name() string {
 }
 func (df *tranFileinfo) Size() int64 {
 	if !df.IsDir() {
-		ddn := df.inner.Name()
 		return df.truesize
 	}
 	return df.inner.Size()
@@ -52,6 +52,7 @@ func (df *tranFileinfo) Sys() interface{} { return df.inner.Sys() }
 //Block=16MB
 //May Block if file is not ready
 func (ft *FileTree) GetFileBlock(path string, blockid int) []byte {
+	return nil
 }
 
 //May Block if writethrough is true
@@ -59,3 +60,12 @@ func (ft *FileTree) SetFileBlock(path string, blockid int, content []byte, write
 
 func (ft *FileTree) Mkdir(path, ele string) {}
 func (ft *FileTree) Rm(path, ele string)    {}
+func (ft *FileTree) GetSize(path string) int64 {
+	f, _ := ft.pf.ReadFile(path + "/size")
+	s, _ := strconv.ParseInt(string(f), 10, 64)
+	return s
+}
+func (ft *FileTree) SetSize(path string, size int64) {
+	s := strconv.FormatInt(size, 10)
+	ft.pf.WriteFile(path+"/size", []byte(s))
+}
