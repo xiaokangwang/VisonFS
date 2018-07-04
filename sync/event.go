@@ -2,13 +2,16 @@ package sync
 
 import (
 	"bytes"
+	"encoding/hex"
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/xiaokangwang/VisonFS/cache"
 	"github.com/xiaokangwang/VisonFS/transform"
+	"golang.org/x/crypto/sha3"
 )
 
 type PendingSync struct {
@@ -23,10 +26,31 @@ type PendingSync struct {
 }
 
 func (ps *PendingSync) BlobUpload(content []byte) string {
+	//transform
+	out, cookie := ps.tf.Advance(content)
+	syncookie := cookie
+	for n := range out {
+		sum := sha3.Sum256(out[n])
+		sumx := hex.EncodeToString(sum[:])
+		ps.QueueFileNetworkUpload("blob/"+sumx, content)
+		syncookie += "$"
+		syncookie += sumx
+	}
+	return syncookie
 
 }
 func (ps *PendingSync) BlobGet(hash string) []byte {
-
+	cookie := strings.Split(hash, "$")
+	cookiei := cookie[0]
+	var file [][]byte
+	for k := range cookie {
+		if k == 0 {
+			cookiei = cookie[0]
+		} else {
+			file = append(file, ps.BlobGet(cookie[k]))
+		}
+	}
+	return ps.tf.Reverse(file, cookiei)
 }
 
 /*
