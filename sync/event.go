@@ -127,3 +127,6 @@ func (ps *PendingSync) UploadDirty() {
 		cache.RemoveDirty(ps.cacheDir + "/" + v)
 	}
 }
+func (ps *PendingSync) Purge() {
+	cache.Purge(ps.cacheDir)
+}

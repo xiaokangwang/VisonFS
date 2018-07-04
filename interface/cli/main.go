@@ -32,5 +32,6 @@ func main() {
 		insi.Rm(os.Args[3], os.Args[4])
 	case "push":
 	case "pull":
+	case "purge":
 	}
 }
