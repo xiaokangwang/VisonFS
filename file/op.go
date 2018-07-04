@@ -7,12 +7,14 @@ import (
 	"time"
 
 	"github.com/xiaokangwang/VisonFS/protectedFolder"
+	"github.com/xiaokangwang/VisonFS/sync"
 	"github.com/xiaokangwang/VisonFS/transform"
 )
 
 type FileTree struct {
 	tf *transform.Transform
 	pf *protectedFolder.DelegatedAccess
+	sy *sync.PendingSync
 }
 
 func (ft *FileTree) Ls(path string) ([]os.FileInfo, error) {
@@ -36,7 +38,10 @@ type tranFileinfo struct {
 	truesize int64
 }
 
-func (df *tranFileinfo) IsDir() bool        { return !strings.HasSuffix(df.inner.Name(), ".d") }
+func (df *tranFileinfo) IsDir() bool {
+	return !strings.HasSuffix(
+		df.inner.Name(), ".d")
+}
 func (df *tranFileinfo) ModTime() time.Time { return df.inner.ModTime() }
 func (df *tranFileinfo) Mode() os.FileMode  { return df.inner.Mode() }
 func (df *tranFileinfo) Name() string {
@@ -57,11 +62,19 @@ func (df *tranFileinfo) Sys() interface{} { return df.inner.Sys() }
 //Block=16MB
 //May Block if file is not ready
 func (ft *FileTree) GetFileBlock(path string, blockid int) []byte {
-	return nil
+	ctx, err := ft.pf.ReadFile(path + ".d/" + strconv.Itoa(blockid))
+	if err != nil {
+		panic(err)
+	}
+	b := ft.sy.BlobGet(string(ctx))
+	return b
 }
 
 //May Block if writethrough is true
-func (ft *FileTree) SetFileBlock(path string, blockid int, content []byte, writethrough bool) {}
+func (ft *FileTree) SetFileBlock(path string, blockid int, content []byte, writethrough bool) {
+	tracker := ft.sy.BlobUpload(content)
+	ft.pf.WriteFile(path+".d/"+strconv.Itoa(blockid), []byte(tracker))
+}
 
 func (ft *FileTree) Mkdir(path, ele string) {
 	ft.pf.WriteFile(path+"/"+ele+"/dir", []byte("dir"))
