@@ -1,14 +1,42 @@
 package file
 
-import "github.com/xiaokangwang/VisonFS/journeldb"
-import "github.com/xiaokangwang/VisonFS/transform"
+import (
+	"os"
+	"strings"
+	"time"
+
+	"github.com/xiaokangwang/VisonFS/protectedFolder"
+	"github.com/xiaokangwang/VisonFS/transform"
+)
 
 type FileTree struct {
-	jd *journeldb.JournelDB
 	tf *transform.Transform
+	pf *protectedFolder.DelegatedAccess
 }
 
-func (ft *FileTree) Ls(path string) {}
+func (ft *FileTree) Ls(path string) ([]os.FileInfo, error) {
+	fl, err := ft.pf.ListFile(path)
+	if err != nil {
+		return nil, err
+	}
+	for k := range fl {
+		fl[k] = &tranFileinfo{inner: fl[k]}
+	}
+	return fl, nil
+}
+
+type tranFileinfo struct {
+	inner os.FileInfo
+}
+
+func (df *tranFileinfo) IsDir() bool        { return !strings.HasSuffix(df.inner.Name(), ".d") }
+func (df *tranFileinfo) ModTime() time.Time { return df.inner.ModTime() }
+func (df *tranFileinfo) Mode() os.FileMode  { return df.inner.Mode() }
+func (df *tranFileinfo) Name() string {
+	return df.inner.Name()
+}
+func (df *tranFileinfo) Size() int64      { return df.inner.Size() }
+func (df *tranFileinfo) Sys() interface{} { return df.inner.Sys() }
 
 //Block=16MB
 //May Block if file is not ready
