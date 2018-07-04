@@ -33,3 +33,13 @@ func Purge(path string) {
 		return nil
 	})
 }
+func FindDrity(path string) []string {
+	var uploading []string
+	filepath.Walk(path, func(pathi string, f os.FileInfo, err error) error {
+		if strings.HasSuffix(pathi, ".dirty") {
+			uploading = append(uploading, pathi)
+		}
+		return nil
+	})
+	return uploading
+}

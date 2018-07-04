@@ -84,9 +84,9 @@ func (ps *PendingSync) SyncMeta() {
 
 }*/
 func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
-	cache.SetDirty(fname)
+	cache.SetDirty(ps.cacheDir + "/" + fname)
 	ps.crlo.Lock()
-	f, err := os.Create(fname)
+	f, err := os.Create(ps.cacheDir + "/" + fname)
 	if err != nil {
 		panic(err)
 	}
@@ -98,12 +98,12 @@ func (ps *PendingSync) QueueFileNetworkUpload(fname string, content []byte) {
 	dt.Filename = fname
 	dt.Content = content
 	ps.nw.EnqueueUploadTask(dt)
-	cache.RemoveDirty(fname)
+	cache.RemoveDirty(ps.cacheDir + "/" + fname)
 }
 func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
-	if cache.IsExist(fname) {
+	if cache.IsExist(ps.cacheDir + "/" + fname) {
 		ps.crlo.RLock()
-		c, e := ioutil.ReadFile(fname)
+		c, e := ioutil.ReadFile(ps.cacheDir + "/" + fname)
 		ps.crlo.RUnlock()
 		return c, e
 	}
@@ -117,5 +117,13 @@ func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
 	return ou.Content, nil
 }
 func (ps *PendingSync) UploadDirty() {
-
+	res := cache.FindDrity(ps.cacheDir)
+	for _, v := range res {
+		c, _ := ioutil.ReadFile(ps.cacheDir + "/" + v)
+		var dt network.NetworkUploadTask
+		dt.Filename = v
+		dt.Content = c
+		ps.nw.EnqueueUploadTask(dt)
+		cache.RemoveDirty(ps.cacheDir + "/" + v)
+	}
 }
