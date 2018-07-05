@@ -79,11 +79,18 @@ func (t *Transfer) progressDownload() {
 func NewTask(File string,
 	RFile string,
 	Upload bool, filei *file.FileTree) *Transfer {
-	info, err := os.Stat(File)
-	if err != nil {
-		panic(err)
+	var size int64
+	if Upload == true {
+		info, err := os.Stat(File)
+		if err != nil {
+			panic(err)
+		}
+		size = info.Size()
+	} else {
+		size = filei.GetSize(RFile)
 	}
-	return &Transfer{RFile: RFile, File: File, Upload: Upload, filei: filei, Size: info.Size()}
+
+	return &Transfer{RFile: RFile, File: File, Upload: Upload, filei: filei, Size: size}
 }
 func (t *Transfer) PushFileInstance(filei *file.FileTree) {
 	t.filei = filei
