@@ -40,16 +40,19 @@ type NetworkListTaskResult struct {
 }
 
 func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {
+	ntq.ensureToken()
 	var err error
 	var file drive.File
-	file.Name = ntq.uploadprefix + task.Filename
+	file.Name = task.Filename
+	file.Parents = []string{ntq.uploadprefix}
 	_, err = ntq.srv.Files.Create(&file).Media(bytes.NewReader(task.Content)).Do()
 	if err != nil {
 		panic(err)
 	}
 }
 func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) NetworkDownloadTaskResult {
-	fn := ntq.uploadprefix + task.Filename
+	ntq.ensureToken()
+	fn := task.Filename
 	r, err := ntq.srv.Files.List().Q("name = '" + fn + "'").PageSize(10).
 		Fields("nextPageToken, files(id, name)").Do()
 	if err != nil {

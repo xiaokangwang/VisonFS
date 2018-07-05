@@ -3,6 +3,7 @@ package sync
 import (
 	"bytes"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -121,6 +122,7 @@ func (ps *PendingSync) UploadDirty() {
 		c, _ := ioutil.ReadFile(ps.cacheDir + "/" + v)
 		var dt network.NetworkUploadTask
 		dt.Filename = v
+		fmt.Println(v)
 		dt.Content = c
 		ps.nw.EnqueueUploadTask(dt)
 		cache.RemoveDirty(ps.cacheDir + "/" + v)

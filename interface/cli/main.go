@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"fmt"
 	"os"
 
 	"github.com/ld9999999999/go-interfacetools"
@@ -23,7 +24,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	interfacetools.CopyOut(result, conffile)
+	interfacetools.CopyOut(result, &conffile)
+	fmt.Println(conffile)
 	var fi instanceadm.Instance
 	fi.Prepare(conffile.Gitpath, conffile.Pubdir, conffile.Prvdir, conffile.Prvpass, conffile.Tmpdir, conffile.UploadPrefix)
 	insi := fi.Launch()

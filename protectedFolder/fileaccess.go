@@ -26,8 +26,8 @@ type DelegatedAccess struct {
 const keySize = 32
 const nonceSize = 24
 
-func NewDelegatedAccess(tf *transform.Transform) *DelegatedAccess {
-	return &DelegatedAccess{tf: tf}
+func NewDelegatedAccess(tf *transform.Transform, root, key string) *DelegatedAccess {
+	return &DelegatedAccess{tf: tf, root: root, key: key}
 }
 
 func (da *DelegatedAccess) ReadToken(t string) string {

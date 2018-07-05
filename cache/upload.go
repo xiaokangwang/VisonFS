@@ -37,7 +37,7 @@ func FindDrity(path string) []string {
 	var uploading []string
 	filepath.Walk(path, func(pathi string, f os.FileInfo, err error) error {
 		if strings.HasSuffix(pathi, ".dirty") {
-			uploading = append(uploading, pathi)
+			uploading = append(uploading, pathi[:len(pathi)-len(".dirty")-1])
 		}
 		return nil
 	})

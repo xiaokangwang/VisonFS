@@ -22,7 +22,7 @@ func (ins *Instance) Prepare(gitpath, pubdir, prvdir, prvpass, tmpdir, uploadper
 	ins.transformi = transform.NewTransform(pubdir, prvdir, prvpass)
 	ins.networki = network.NewNetworkTaskQueue(uploadperfix)
 	ins.synci = sync.NewPendingSync(ins.transformi, ins.networki, tmpdir)
-	ins.protectedFolderi = protectedFolder.NewDelegatedAccess(ins.transformi)
+	ins.protectedFolderi = protectedFolder.NewDelegatedAccess(ins.transformi, gitpath, prvpass)
 	ins.filei = file.NewFileTree(ins.transformi, ins.protectedFolderi, ins.synci, ins.gitctli)
 	//Look for dirty
 	ins.synci.UploadDirty()

@@ -23,7 +23,7 @@ func (t *Transfer) UploadMeta() {
 	t.filei.SetSize(t.RFile, t.Size)
 }
 func (t *Transfer) BlockSum() int64 {
-	return (t.Size / Blocksize) + 1
+	return (t.Size / Blocksize) + 2
 }
 
 func (t *Transfer) ProcessBlock() {
@@ -45,7 +45,7 @@ func (t *Transfer) ProcessBlock() {
 	}
 }
 func (t *Transfer) HasNext() bool {
-	return t.BlockSum() <= t.LastTransferedBlock
+	return t.BlockSum() >= t.LastTransferedBlock
 }
 func (t *Transfer) LastBlock() bool {
 	return t.BlockSum() == t.LastTransferedBlock
