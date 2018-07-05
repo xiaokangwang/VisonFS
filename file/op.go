@@ -23,7 +23,7 @@ type FileTree struct {
 func NewFileTree(tf *transform.Transform,
 	pf *protectedFolder.DelegatedAccess,
 	sy *sync.PendingSync, gitctli *gitctl.Gitctl) *FileTree {
-	return &FileTree{tf: tf, pf: pf, sy: sy}
+	return &FileTree{tf: tf, pf: pf, sy: sy, gitctli: gitctli}
 }
 
 func (ft *FileTree) Ls(path string) ([]os.FileInfo, error) {
