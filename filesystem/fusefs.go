@@ -273,9 +273,14 @@ func (f *visonFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 	thisblock := int(off / Blocksize)
 	if thisblock == f.bufferblock {
 		//Write to local buffer
+		f.bufferdirty = true
 	}
 	//replace buffer
 	return 0, fuse.ENOSYS
+
+}
+
+func (f *visonFile) swapBuffer(block int) {
 
 }
 
