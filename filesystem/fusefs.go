@@ -265,8 +265,12 @@ func (f *visonFile) Read(buf []byte, off int64) (fuse.ReadResult, fuse.Status) {
 	thisblock := int(off / Blocksize)
 	if thisblock == f.bufferblock {
 		//Return data from local buffer
+
+	} else {
+		//replace buffer
+		f.swapBuffer(thisblock)
 	}
-	//replace buffer
+
 	return nil, fuse.ENOSYS
 
 }
