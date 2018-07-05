@@ -135,8 +135,10 @@ func (fs *visonFS) Chown(name string, uid uint32, gid uint32, context *fuse.Cont
 func (fs *visonFS) Truncate(name string, offset uint64, context *fuse.Context) (code fuse.Status) {
 	_, okerr := fs.filei.Attr(name)
 	if okerr != nil {
-		fs.filei.SetSize(name, int64(offset))
-		return fuse.OK
+		f := fs.openfile(name)
+		ret := f.Truncate(int64(offset))
+		f.Release()
+		return ret
 	}
 
 	return fuse.ENOENT
