@@ -38,7 +38,7 @@ func (ps *PendingSync) BlobUpload(content []byte) string {
 	for n := range out {
 		sum := sha3.Sum256(out[n])
 		sumx := hex.EncodeToString(sum[:])
-		ps.QueueFileNetworkUpload("blob/"+sumx, content)
+		ps.QueueFileNetworkUpload("blob/"+sumx, out[n])
 		syncookie += "$"
 		syncookie += sumx
 	}
