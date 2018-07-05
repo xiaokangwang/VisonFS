@@ -103,3 +103,12 @@ func (ft *FileTree) SetSize(path string, size int64) {
 	ft.pf.WriteFile(path+"/size", []byte(s))
 	ft.gitctli.NewVerison()
 }
+
+func (ft *FileTree) Attr(path string) (os.FileInfo, error) {
+	info, err := ft.pf.FileAttr(path)
+	if err != nil {
+		return nil, err
+	}
+	return &tranFileinfo{inner: info}, nil
+
+}

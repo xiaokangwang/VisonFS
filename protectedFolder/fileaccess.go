@@ -120,6 +120,16 @@ func (da *DelegatedAccess) RemoveFile(path string) error {
 	return nil
 }
 
+func (da *DelegatedAccess) FileAttr(path string) (os.FileInfo, error) {
+	pn, fn := da.toPath(path)
+	dirv := da.root + "/" + pn
+	info, err := os.Stat(dirv + "/" + fn)
+	if err != nil {
+		return nil, err
+	}
+	return &decryptFileinfo{inner: info}, nil
+}
+
 type decryptFileinfo struct {
 	inner os.FileInfo
 	da    *DelegatedAccess
