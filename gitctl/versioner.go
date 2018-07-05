@@ -1,6 +1,11 @@
 package gitctl
 
-import "gopkg.in/src-d/go-git.v4"
+import (
+	"time"
+
+	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
+)
 
 type Gitctl struct {
 	path    string
@@ -18,7 +23,11 @@ func (gic *Gitctl) NewVerison() {
 		panic(err)
 	}
 	wc.AddGlob("autocommit/*")
-	_, err = wc.Commit("New File Version", &git.CommitOptions{})
+	var author object.Signature
+	author.Name = "Auto Commiter"
+	author.Email = "stub@stub.kkdev.org"
+	author.When = time.Now()
+	_, err = wc.Commit("New File Version", &git.CommitOptions{Author: author})
 	if err != nil {
 		panic(err)
 	}
