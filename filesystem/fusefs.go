@@ -38,6 +38,7 @@ func (fs *visionFS) GetAttr(name string, context *fuse.Context) (*fuse.Attr, fus
 			a.Mode = fuse.S_IFDIR | 0700
 		} else {
 			a.Mode = 0700
+			a.Size = uint64(fs.filei.GetSize(name))
 		}
 		return a, fuse.OK
 	}
