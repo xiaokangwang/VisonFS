@@ -136,7 +136,7 @@ func (da *DelegatedAccess) listFileE(epath string) ([]os.FileInfo, error) {
 	dirv := da.root + "/" + epath
 	var fni []os.FileInfo
 	filepath.Walk(dirv, func(path string, info os.FileInfo, err error) error {
-		fni = append(fni, &decryptFileinfo{inner: info})
+		fni = append(fni, &decryptFileinfo{inner: info, da: da})
 		return nil
 	})
 	return fni, nil
