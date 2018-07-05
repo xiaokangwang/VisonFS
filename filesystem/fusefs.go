@@ -290,6 +290,9 @@ func (f *visonFile) swapBuffer(block int) {
 		}
 	}
 	f.buffer = f.filei.GetFileBlock(f.path, block)
+	if f.buffer == nil {
+		f.buffer = make([]byte, Blocksize)
+	}
 	f.bufferdirty = false
 	f.bufferblock = block
 }
