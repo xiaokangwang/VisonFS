@@ -279,7 +279,6 @@ func (f *visonFile) Flush() fuse.Status {
 }
 
 func (f *visonFile) Release() {
-
 }
 
 func (f *visonFile) GetAttr(*fuse.Attr) fuse.Status {
@@ -323,3 +322,5 @@ func (f *visonFile) Allocate(off uint64, size uint64, mode uint32) (code fuse.St
 	return fuse.ENOSYS
 
 }
+
+const Blocksize = 1024 * 1024 * 16
