@@ -83,7 +83,24 @@ func (da *DelegatedAccess) ReadFile(path string) ([]byte, error) {
 func (da *DelegatedAccess) toPath(path string) (string, string) {
 	fmt.Println(path)
 	dir := strings.Split(path, "/")
+	knowndir := ""
+	skip_search := false
 	for k := range dir {
+		if !skip_search {
+			res, err := da.ListFile(knowndir)
+			if err != nil {
+				panic(err)
+			}
+			for _, resi := range res {
+				if resi.Name() == dir[k] {
+					dir[k] = resi.Name()
+					knowndir += "/"
+					knowndir += resi.Name()
+					continue
+				}
+			}
+			skip_search = true
+		}
 		dir[k] = da.CreateToken(dir[k])
 	}
 	fn := dir[len(dir)-1]
