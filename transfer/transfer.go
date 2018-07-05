@@ -23,7 +23,7 @@ func (t *Transfer) UploadMeta() {
 	t.filei.SetSize(t.RFile, t.Size)
 }
 func (t *Transfer) BlockSum() int64 {
-	return (t.Size / Blocksize) + 2
+	return (t.Size / Blocksize) + 1
 }
 
 func (t *Transfer) ProcessBlock() {
@@ -60,9 +60,14 @@ func (t *Transfer) progressUpload() {
 	lfile.Seek(loc, 0)
 	r := io.LimitReader(lfile, Blocksize)
 	buf := make([]byte, Blocksize)
-	io.ReadFull(r, buf)
+	n, err := io.ReadFull(r, buf)
+	if err != nil {
+		panic(err)
+	}
 	lfile.Close()
-	t.filei.SetFileBlock(t.RFile, int(t.LastTransferedBlock+1), buf, true)
+	if n != 0 {
+		t.filei.SetFileBlock(t.RFile, int(t.LastTransferedBlock+1), buf[:n], true)
+	}
 	t.LastTransferedBlock++
 }
 func (t *Transfer) progressDownload() {
