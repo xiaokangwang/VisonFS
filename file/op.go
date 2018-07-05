@@ -85,12 +85,12 @@ func (ft *FileTree) SetFileBlock(path string, blockid int, content []byte, write
 	ft.gitctli.NewVerison()
 }
 
-func (ft *FileTree) Mkdir(path, ele string) {
-	ft.pf.WriteFile(path+"/"+ele+"/dir", []byte("dir"))
+func (ft *FileTree) Mkdir(path string) {
+	ft.pf.WriteFile(path+"/dir", []byte("dir"))
 	ft.gitctli.NewVerison()
 }
-func (ft *FileTree) Rm(path, ele string) {
-	ft.pf.RemoveFile(path + "/" + ele)
+func (ft *FileTree) Rm(path string) {
+	ft.pf.RemoveFile(path)
 	ft.gitctli.NewVerison()
 }
 func (ft *FileTree) GetSize(path string) int64 {

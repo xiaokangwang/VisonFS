@@ -85,19 +85,19 @@ func (fs *visonFS) Mknod(name string, mode uint32, dev uint32, context *fuse.Con
 }
 
 func (fs *visonFS) Mkdir(name string, mode uint32, context *fuse.Context) fuse.Status {
-
-	return fuse.ENOSYS
+	fs.filei.Mkdir(name)
+	return fuse.OK
 
 }
 
 func (fs *visonFS) Unlink(name string, context *fuse.Context) (code fuse.Status) {
-
-	return fuse.ENOSYS
+	fs.filei.Rm(name)
+	return fuse.OK
 
 }
 
 func (fs *visonFS) Rmdir(name string, context *fuse.Context) (code fuse.Status) {
-
+	fs.filei.Rm(path)
 	return fuse.ENOSYS
 
 }
@@ -136,7 +136,7 @@ func (fs *visonFS) Truncate(name string, offset uint64, context *fuse.Context) (
 	_, okerr := fs.filei.Attr(name)
 	if okerr != nil {
 		f := fs.openfile(name)
-		ret := f.Truncate(int64(offset))
+		ret := f.Truncate(uint64(offset))
 		f.Release()
 		return ret
 	}
@@ -147,7 +147,12 @@ func (fs *visonFS) Truncate(name string, offset uint64, context *fuse.Context) (
 
 func (fs *visonFS) Open(name string, flags uint32, context *fuse.Context) (file nodefs.File, code fuse.Status) {
 
-	return nil, fuse.ENOSYS
+	_, okerr := fs.filei.Attr(name)
+	if okerr != nil {
+		f := fs.openfile(name)
+		return f, fuse.OK
+	}
+	return nil, fuse.ENOENT
 
 }
 
@@ -187,7 +192,8 @@ func (fs *visonFS) Access(name string, mode uint32, context *fuse.Context) (code
 
 func (fs *visonFS) Create(name string, flags uint32, mode uint32, context *fuse.Context) (file nodefs.File, code fuse.Status) {
 
-	return nil, fuse.ENOSYS
+	f := fs.openfile(name)
+	return f, fuse.OK
 
 }
 
