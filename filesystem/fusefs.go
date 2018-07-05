@@ -19,7 +19,7 @@ func NewVisonFS() pathfs.FileSystem {
 
 type visonFS struct {
 	filei      *file.FileTree
-	openedFile *map[string]visonFile
+	openedFile map[string]visonFile
 }
 
 func (fs *visonFS) SetDebug(debug bool) {}
