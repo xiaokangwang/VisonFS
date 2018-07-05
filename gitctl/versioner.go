@@ -17,7 +17,7 @@ func (gic *Gitctl) NewVerison() {
 	if err != nil {
 		panic(err)
 	}
-	wc.AddGlob("*")
+	wc.AddGlob("*.*")
 	wc.Commit("New File Version", &git.CommitOptions{})
 }
 
