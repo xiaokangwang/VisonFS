@@ -19,7 +19,7 @@ func NewVisonFS() pathfs.FileSystem {
 
 type visonFS struct {
 	filei      *file.FileTree
-	openedFile map[string]visonFile
+	openedFile map[string](*visonFile)
 }
 
 func (fs *visonFS) SetDebug(debug bool) {}
@@ -206,11 +206,20 @@ func (fs *visonFS) StatFs(name string) *fuse.StatfsOut {
 	return nil
 
 }
+func (fs *visonFS) openfile(name string) *visonFile {
+	if of, ok := fs.openedFile[name]; ok {
+		of.opencount++
+		return of
+	}
+	size := fs.filei.GetSize(name)
+	file := &visonFile{bufferblock: -1, size: size, path: name, opencount: 1}
+	return file
+}
 
 type visonFile struct {
 	bufferblock int
 	buffer      []byte
-	size        int
+	size        int64
 	path        string
 	opencount   int
 }
