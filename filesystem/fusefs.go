@@ -18,7 +18,8 @@ func NewVisonFS() pathfs.FileSystem {
 }
 
 type visonFS struct {
-	filei *file.FileTree
+	filei      *file.FileTree
+	openedFile *map[string]visonFile
 }
 
 func (fs *visonFS) SetDebug(debug bool) {}
@@ -211,6 +212,7 @@ type visonFile struct {
 	buffer      []byte
 	size        int
 	path        string
+	opencount   int
 }
 
 // NewDefaultFile returns a File instance that returns ENOSYS for
