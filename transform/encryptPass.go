@@ -44,10 +44,11 @@ func (ep *encryptPass) PassForword(w io.Writer, r io.Reader) {
 	ep.EnsurePublickeyEntity()
 	ep.EnsurePrivatekeyEntity()
 	pv := ep.privateKey[0]
-	pv.PrivateKey.Decrypt([]byte(ep.privatekeyPass))
-	for _, v := range pv.Subkeys {
-		v.PrivateKey.Decrypt([]byte(ep.privatekeyPass))
-	}
+	/*
+		pv.PrivateKey.Decrypt([]byte(ep.privatekeyPass))
+		for _, v := range pv.Subkeys {
+			v.PrivateKey.Decrypt([]byte(ep.privatekeyPass))
+		}*/
 	outd, err := openpgp.Encrypt(w, ep.publickey, pv, nil, nil)
 	if err != nil {
 		panic(err)
