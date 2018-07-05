@@ -232,6 +232,7 @@ type visonFile struct {
 	path        string
 	opencount   int
 	filei       *file.FileTree
+	fs          *visonFS
 }
 
 // NewDefaultFile returns a File instance that returns ENOSYS for
@@ -309,6 +310,8 @@ func (f *visonFile) Release() {
 	f.opencount--
 	if f.opencount == 0 {
 		//TODO SYNC
+		f.Fsync(0)
+		delete(f.fs.openedFile, f.path)
 	}
 }
 
@@ -319,8 +322,13 @@ func (f *visonFile) GetAttr(*fuse.Attr) fuse.Status {
 }
 
 func (f *visonFile) Fsync(flags int) (code fuse.Status) {
-
-	return fuse.ENOSYS
+	if f.bufferdirty {
+		f.filei.SetFileBlock(f.path, f.bufferblock, f.buffer, false)
+		if f.size != f.filei.GetSize(f.path) {
+			f.filei.SetSize(f.path, f.size)
+		}
+	}
+	return fuse.OK
 
 }
 
