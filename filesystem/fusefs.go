@@ -191,7 +191,7 @@ func (fs *visionFS) Utimens(name string, Atime *time.Time, Mtime *time.Time, con
 
 func (fs *visionFS) String() string {
 
-	return "visionFSs"
+	return "visionFS"
 
 }
 
