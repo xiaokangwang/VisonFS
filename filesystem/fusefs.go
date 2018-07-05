@@ -206,7 +206,12 @@ func (fs *visonFS) StatFs(name string) *fuse.StatfsOut {
 
 }
 
-type visonFile struct{}
+type visonFile struct {
+	bufferblock int
+	buffer      []byte
+	size        int
+	path        string
+}
 
 // NewDefaultFile returns a File instance that returns ENOSYS for
 
