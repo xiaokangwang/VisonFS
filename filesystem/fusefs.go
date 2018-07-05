@@ -227,6 +227,7 @@ func (fs *visonFS) openfile(name string) *visonFile {
 type visonFile struct {
 	bufferblock int
 	buffer      []byte
+	bufferdirty bool
 	size        int64
 	path        string
 	opencount   int
@@ -259,13 +260,21 @@ func (f *visonFile) String() string {
 }
 
 func (f *visonFile) Read(buf []byte, off int64) (fuse.ReadResult, fuse.Status) {
-
+	thisblock := int(off / Blocksize)
+	if thisblock == f.bufferblock {
+		//Return data from local buffer
+	}
+	//replace buffer
 	return nil, fuse.ENOSYS
 
 }
 
 func (f *visonFile) Write(data []byte, off int64) (uint32, fuse.Status) {
-
+	thisblock := int(off / Blocksize)
+	if thisblock == f.bufferblock {
+		//Write to local buffer
+	}
+	//replace buffer
 	return 0, fuse.ENOSYS
 
 }
@@ -279,6 +288,10 @@ func (f *visonFile) Flush() fuse.Status {
 }
 
 func (f *visonFile) Release() {
+	f.opencount--
+	if f.opencount == 0 {
+		//TODO SYNC
+	}
 }
 
 func (f *visonFile) GetAttr(*fuse.Attr) fuse.Status {
