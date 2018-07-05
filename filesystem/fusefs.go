@@ -223,6 +223,10 @@ func (fs *visonFS) openfile(name string) *visonFile {
 		return of
 	}
 	size := fs.filei.GetSize(name)
+	if size == -1 {
+		size = 0
+		fs.filei.SetSize(name, 0)
+	}
 	file := &visonFile{bufferblock: -1, size: size, path: name, opencount: 1}
 	return file
 }
