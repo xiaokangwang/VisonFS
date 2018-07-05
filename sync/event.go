@@ -17,7 +17,6 @@ import (
 
 type PendingSync struct {
 	cacheDir   string
-	metadomain string
 	cacheusing uint64
 	cacheCap   uint64
 
@@ -27,8 +26,8 @@ type PendingSync struct {
 	crlo sync.RWMutex
 }
 
-func NewPendingSync(tf *transform.Transform, nw *network.NetworkTaskQueue) *PendingSync {
-	return &PendingSync{tf: tf, nw: nw}
+func NewPendingSync(tf *transform.Transform, nw *network.NetworkTaskQueue, cachedir string) *PendingSync {
+	return &PendingSync{tf: tf, nw: nw, cacheDir: cachedir}
 }
 
 func (ps *PendingSync) BlobUpload(content []byte) string {
