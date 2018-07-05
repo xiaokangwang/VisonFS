@@ -281,7 +281,7 @@ func (f *visonFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 }
 
 func (f *visonFile) swapBuffer(block int) {
-
+	//first, swap out old data
 }
 
 func (f *visonFile) Flock(flags int) fuse.Status { return fuse.ENOSYS }
