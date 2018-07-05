@@ -275,10 +275,27 @@ func (f *visonFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 	thisblock := int(off / Blocksize)
 	if thisblock == f.bufferblock {
 		//Write to local buffer
-		f.bufferdirty = true
+	} else {
+		f.swapBuffer(thisblock)
 	}
-	//replace buffer
-	return 0, fuse.ENOSYS
+	f.bufferdirty = true
+	if len(f.buffer) != Blocksize {
+		old := f.buffer
+		f.buffer = make([]byte, Blocksize)
+		copy(f.buffer, old)
+	}
+	//find offset projection with in block
+	blockoffset := off % Blocksize
+	maxremain := Blocksize - blockoffset
+	var copysum = len(data)
+	if int64(len(data)) > maxremain {
+		copysum = int(maxremain)
+	}
+	copy(f.buffer[blockoffset:], data[:copysum-1])
+	if f.size < int64(off+int64(copysum)) {
+		f.size = int64(off + int64(copysum))
+	}
+	return uint32(copysum), fuse.ENOSYS
 
 }
 
