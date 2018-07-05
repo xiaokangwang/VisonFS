@@ -271,7 +271,24 @@ func (f *visonFile) Read(buf []byte, off int64) (fuse.ReadResult, fuse.Status) {
 		f.swapBuffer(thisblock)
 	}
 
-	return nil, fuse.ENOSYS
+	//check off
+	if off >= f.size {
+		return fuse.ReadResultData(nil), fuse.OK
+	}
+
+	//find offset projection with in block
+	blockoffset := off % Blocksize
+	maxremain := Blocksize - blockoffset
+	var readsum = len(buf)
+	if readsum > int(maxremain) {
+		readsum = int(maxremain)
+	}
+	sizelimit := f.size - off
+
+	if readsum > int(sizelimit) {
+		readsum = int(sizelimit)
+	}
+	return fuse.ReadResultData(f.buffer[blockoffset : int(blockoffset)+readsum-1]), fuse.OK
 
 }
 
