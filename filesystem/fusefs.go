@@ -97,7 +97,7 @@ func (fs *visonFS) Unlink(name string, context *fuse.Context) (code fuse.Status)
 }
 
 func (fs *visonFS) Rmdir(name string, context *fuse.Context) (code fuse.Status) {
-	fs.filei.Rm(path)
+	fs.filei.Rm(name)
 	return fuse.ENOSYS
 
 }
@@ -300,7 +300,7 @@ func (f *visonFile) Utimens(atime *time.Time, mtime *time.Time) fuse.Status {
 }
 
 func (f *visonFile) Truncate(size uint64) fuse.Status {
-
+	f.size = int64(size)
 	return fuse.ENOSYS
 
 }
