@@ -27,7 +27,7 @@ func (gic *Gitctl) NewVerison() {
 	author.Name = "Auto Commiter"
 	author.Email = "stub@stub.kkdev.org"
 	author.When = time.Now()
-	_, err = wc.Commit("New File Version", &git.CommitOptions{Author: author})
+	_, err = wc.Commit("New File Version", &git.CommitOptions{Author: &author})
 	if err != nil {
 		panic(err)
 	}
