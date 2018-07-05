@@ -1,6 +1,7 @@
 package network
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -37,7 +38,15 @@ type NetworkListTaskResult struct {
 	Files []string
 }
 
-func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {}
+func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {
+	var err error
+	var file drive.File
+	file.Name = task.Filename
+	_, err = ntq.srv.Files.Create(&file).Media(bytes.NewReader(task.Content)).Do()
+	if err != nil {
+		panic(err)
+	}
+}
 func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) NetworkDownloadTaskResult {
 	panic(nil)
 }
