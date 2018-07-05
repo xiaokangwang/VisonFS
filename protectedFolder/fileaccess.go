@@ -87,7 +87,7 @@ func (da *DelegatedAccess) toPath(path string) (string, string) {
 	skip_search := false
 	for k := range dir {
 		if !skip_search {
-			res, err := da.ListFile(knowndir)
+			res, err := da.listFileE(knowndir)
 			if err != nil {
 				panic(err)
 			}
@@ -127,6 +127,15 @@ func (da *DelegatedAccess) ListFile(path string) ([]os.FileInfo, error) {
 	dir := dirv + "/" + fn
 	var fni []os.FileInfo
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		fni = append(fni, &decryptFileinfo{inner: info})
+		return nil
+	})
+	return fni, nil
+}
+func (da *DelegatedAccess) listFileE(epath string) ([]os.FileInfo, error) {
+	dirv := da.root + "/" + epath
+	var fni []os.FileInfo
+	filepath.Walk(dirv, func(path string, info os.FileInfo, err error) error {
 		fni = append(fni, &decryptFileinfo{inner: info})
 		return nil
 	})
