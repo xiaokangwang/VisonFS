@@ -98,7 +98,7 @@ func (fs *visonFS) Unlink(name string, context *fuse.Context) (code fuse.Status)
 
 func (fs *visonFS) Rmdir(name string, context *fuse.Context) (code fuse.Status) {
 	fs.filei.Rm(name)
-	return fuse.ENOSYS
+	return fuse.OK
 
 }
 
