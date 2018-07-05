@@ -323,4 +323,4 @@ func (f *visonFile) Allocate(off uint64, size uint64, mode uint32) (code fuse.St
 
 }
 
-const Blocksize = 1024 * 1024 * 16
+const Blocksize = 1024 * 1024 * 16sss
