@@ -16,11 +16,11 @@ type Instance struct {
 	transformi       *transform.Transform
 }
 
-func (ins *Instance) Prepare(gitpath, pubdir, prvdir, prvpass, tmpdir string) {
+func (ins *Instance) Prepare(gitpath, pubdir, prvdir, prvpass, tmpdir, uploadperfix string) {
 	//instance all dep
 	ins.gitctli = gitctl.NewGitctl(gitpath)
 	ins.transformi = transform.NewTransform(pubdir, prvdir, prvpass)
-	ins.networki = network.NewNetworkTaskQueue()
+	ins.networki = network.NewNetworkTaskQueue(uploadperfix)
 	ins.synci = sync.NewPendingSync(ins.transformi, ins.networki, tmpdir)
 	ins.protectedFolderi = protectedFolder.NewDelegatedAccess(ins.transformi)
 	ins.filei = file.NewFileTree(ins.transformi, ins.protectedFolderi, ins.synci, ins.gitctli)

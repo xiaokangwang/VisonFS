@@ -1,5 +1,5 @@
 package conf
 
 type Configure struct {
-	Gitpath, Pubdir, Prvdir, Prvpass, Tmpdir string
+	Gitpath, Pubdir, Prvdir, Prvpass, Tmpdir, UploadPrefix string
 }

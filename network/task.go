@@ -16,7 +16,8 @@ import (
 )
 
 type NetworkTaskQueue struct {
-	srv *drive.Service
+	srv          *drive.Service
+	uploadprefix string
 }
 
 type NetworkUploadTask struct {
@@ -41,14 +42,14 @@ type NetworkListTaskResult struct {
 func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {
 	var err error
 	var file drive.File
-	file.Name = task.Filename
+	file.Name = ntq.uploadprefix + task.Filename
 	_, err = ntq.srv.Files.Create(&file).Media(bytes.NewReader(task.Content)).Do()
 	if err != nil {
 		panic(err)
 	}
 }
 func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) NetworkDownloadTaskResult {
-	fn := task.Filename
+	fn := ntq.uploadprefix + task.Filename
 	r, err := ntq.srv.Files.List().Q("name = '" + fn + "'").PageSize(10).
 		Fields("nextPageToken, files(id, name)").Do()
 	if err != nil {
@@ -72,8 +73,8 @@ func (ntq *NetworkTaskQueue) EnqueueListTask(task NetworkListTask) NetworkListTa
 	panic(nil)
 }
 
-func NewNetworkTaskQueue() *NetworkTaskQueue {
-	return &NetworkTaskQueue{}
+func NewNetworkTaskQueue(prefix string) *NetworkTaskQueue {
+	return &NetworkTaskQueue{uploadprefix: prefix}
 }
 func (ntq *NetworkTaskQueue) ensureToken() {
 	b, err := ioutil.ReadFile("credentials.json")

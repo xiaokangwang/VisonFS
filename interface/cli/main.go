@@ -25,7 +25,7 @@ func main() {
 	}
 	interfacetools.CopyOut(result, conffile)
 	var fi instanceadm.Instance
-	fi.Prepare(conffile.Gitpath, conffile.Pubdir, conffile.Prvdir, conffile.Prvpass, conffile.Tmpdir)
+	fi.Prepare(conffile.Gitpath, conffile.Pubdir, conffile.Prvdir, conffile.Prvpass, conffile.Tmpdir, conffile.UploadPrefix)
 	insi := fi.Launch()
 	switch os.Args[2] {
 	case "mkdir":
