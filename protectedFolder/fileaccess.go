@@ -83,20 +83,24 @@ func (da *DelegatedAccess) ReadFile(path string) ([]byte, error) {
 func (da *DelegatedAccess) toPath(path string) (string, string) {
 	fmt.Println(path)
 	dir := strings.Split(path, "/")
-	knowndir := ""
+	knowndir := "/"
 	skip_search := false
+dir_for:
 	for k := range dir {
 		if !skip_search {
 			res, err := da.listFileE(knowndir)
 			if err != nil {
 				panic(err)
 			}
-			for _, resi := range res {
+			for i, resi := range res {
+				if i == 0 {
+					continue
+				}
 				if resi.Name() == dir[k] {
-					dir[k] = resi.Name()
+					dir[k] = resi.(*decryptFileinfo).inner.Name()
 					knowndir += "/"
 					knowndir += resi.Name()
-					continue
+					continue dir_for
 				}
 			}
 			skip_search = true
