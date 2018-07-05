@@ -32,7 +32,7 @@ func NewDelegatedAccess(tf *transform.Transform, root, key string) *DelegatedAcc
 
 func (da *DelegatedAccess) ReadToken(t string) string {
 	key := da.key
-	ssep := strings.Split(t, "_")
+	ssep := strings.Split(t, ".")
 	bd := base64.NewDecoder(base64.RawURLEncoding, strings.NewReader(ssep[0]))
 	bnd := base64.NewDecoder(base64.RawURLEncoding, strings.NewReader(ssep[1]))
 	bdb, _ := ioutil.ReadAll(bd)
@@ -62,7 +62,7 @@ func (da *DelegatedAccess) CreateToken(c string) string {
 	d64e := base64.NewEncoder(base64.RawURLEncoding, &dab)
 	d64e.Write(ops[:])
 	d64e.Close()
-	return string(dab.Bytes()) + "_" + string(mb.Bytes())
+	return string(dab.Bytes()) + "." + string(mb.Bytes())
 }
 func (da *DelegatedAccess) ReadFile(path string) ([]byte, error) {
 	pn, fn := da.toPath(path)
