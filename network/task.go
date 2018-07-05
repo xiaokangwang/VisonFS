@@ -48,7 +48,25 @@ func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {
 	}
 }
 func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) NetworkDownloadTaskResult {
-	panic(nil)
+	fn := task.Filename
+	r, err := ntq.srv.Files.List().Q("name = '" + fn + "'").PageSize(10).
+		Fields("nextPageToken, files(id, name)").Do()
+	if err != nil {
+		log.Fatalf("Unable to retrieve files: %v", err)
+	}
+	did := r.Files[0].Id
+	resp, err := ntq.srv.Files.Get(did).AcknowledgeAbuse(true).Download()
+	if err != nil {
+		panic(err)
+	}
+	c, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	resp.Body.Close()
+	var nt NetworkDownloadTaskResult
+	nt.Content = c
+	return nt
 }
 func (ntq *NetworkTaskQueue) EnqueueListTask(task NetworkListTask) NetworkListTaskResult {
 	panic(nil)
