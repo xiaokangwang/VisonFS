@@ -231,6 +231,7 @@ type visonFile struct {
 	size        int64
 	path        string
 	opencount   int
+	filei       *file.FileTree
 }
 
 // NewDefaultFile returns a File instance that returns ENOSYS for
@@ -282,6 +283,15 @@ func (f *visonFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 
 func (f *visonFile) swapBuffer(block int) {
 	//first, swap out old data
+	if f.bufferdirty {
+		f.filei.SetFileBlock(f.path, f.bufferblock, f.buffer, false)
+		if f.size != f.filei.GetSize(f.path) {
+			f.filei.SetSize(f.path, f.size)
+		}
+	}
+	f.buffer = f.filei.GetFileBlock(f.path, block)
+	f.bufferdirty = false
+	f.bufferblock = block
 }
 
 func (f *visonFile) Flock(flags int) fuse.Status { return fuse.ENOSYS }

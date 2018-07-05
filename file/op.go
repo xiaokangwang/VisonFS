@@ -1,6 +1,7 @@
 package file
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -72,7 +73,8 @@ func (df *tranFileinfo) Sys() interface{} { return df.inner.Sys() }
 func (ft *FileTree) GetFileBlock(path string, blockid int) []byte {
 	ctx, err := ft.pf.ReadFile(path + ".d/" + strconv.Itoa(blockid))
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return nil
 	}
 	b := ft.sy.BlobGet(string(ctx))
 	return b
