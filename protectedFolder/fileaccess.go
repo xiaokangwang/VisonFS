@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -27,7 +28,7 @@ const keySize = 32
 const nonceSize = 24
 
 func NewDelegatedAccess(tf *transform.Transform, root, key string) *DelegatedAccess {
-	return &DelegatedAccess{tf: tf, root: root, key: key}
+	return &DelegatedAccess{tf: tf, root: root + "/autocommit", key: key}
 }
 
 func (da *DelegatedAccess) ReadToken(t string) string {
@@ -80,20 +81,24 @@ func (da *DelegatedAccess) ReadFile(path string) ([]byte, error) {
 	return buf.Bytes(), err
 }
 func (da *DelegatedAccess) toPath(path string) (string, string) {
+	fmt.Println(path)
 	dir := strings.Split(path, "/")
 	for k := range dir {
 		dir[k] = da.CreateToken(dir[k])
 	}
 	fn := dir[len(dir)-1]
-	pn := strings.Join(dir[:len(dir)-2], "/")
+	pn := strings.Join(dir[:len(dir)-1], "/")
+	fmt.Println(dir)
 	return pn, fn
 }
 func (da *DelegatedAccess) WriteFile(path string, filecont []byte) error {
 	pn, fn := da.toPath(path)
 	dirv := da.root + "/" + pn
+	os.MkdirAll(dirv, 0700)
 	f, err := os.Create(dirv + "/" + fn)
 	if err != nil {
-		return err
+		panic(err)
+		//return err
 	}
 	da.tf.Encrypt(f, bytes.NewReader(filecont))
 	f.Close()

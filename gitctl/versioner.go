@@ -17,8 +17,11 @@ func (gic *Gitctl) NewVerison() {
 	if err != nil {
 		panic(err)
 	}
-	wc.AddGlob("*.*")
-	wc.Commit("New File Version", &git.CommitOptions{})
+	wc.AddGlob("autocommit/*")
+	_, err = wc.Commit("New File Version", &git.CommitOptions{})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (gic *Gitctl) ensureCurrent() {
