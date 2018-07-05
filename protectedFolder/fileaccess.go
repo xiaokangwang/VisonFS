@@ -136,6 +136,9 @@ func (da *DelegatedAccess) listFileE(epath string) ([]os.FileInfo, error) {
 	dirv := da.root + "/" + epath
 	var fni []os.FileInfo
 	filepath.Walk(dirv, func(path string, info os.FileInfo, err error) error {
+		if info == nil {
+			return nil
+		}
 		fni = append(fni, &decryptFileinfo{inner: info, da: da})
 		return nil
 	})
@@ -170,6 +173,9 @@ func (df *decryptFileinfo) IsDir() bool        { return df.inner.IsDir() }
 func (df *decryptFileinfo) ModTime() time.Time { return df.inner.ModTime() }
 func (df *decryptFileinfo) Mode() os.FileMode  { return df.inner.Mode() }
 func (df *decryptFileinfo) Name() string {
+	fmt.Println(df)
+	fmt.Println(df.da)
+	fmt.Println(df.inner)
 	return df.da.ReadToken(df.inner.Name())
 }
 func (df *decryptFileinfo) Size() int64      { return df.inner.Size() }
