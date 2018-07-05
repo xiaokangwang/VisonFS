@@ -163,6 +163,9 @@ func (fs *visonFS) OpenDir(name string, context *fuse.Context) (stream []fuse.Di
 		return nil, fuse.EINVAL
 	}
 	for _, v := range res {
+		if v == nil {
+			continue
+		}
 		st := new(fuse.DirEntry)
 		st.Name = v.Name()
 		if v.IsDir() {

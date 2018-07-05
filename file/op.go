@@ -34,6 +34,9 @@ func (ft *FileTree) Ls(path string) ([]os.FileInfo, error) {
 	for k := range fl {
 		if fl[k].Name() != "dir" {
 			fl[k] = &tranFileinfo{inner: fl[k]}
+			if fl[k].Size() == -1 {
+				fl[k] = nil
+			}
 		} else {
 			fl[k] = nil
 		}
@@ -93,6 +96,7 @@ func (ft *FileTree) Mkdir(path string) {
 }
 func (ft *FileTree) Rm(path string) {
 	ft.pf.RemoveFile(path)
+	ft.SetSize(path, -1)
 	ft.gitctli.NewVerison()
 }
 func (ft *FileTree) GetSize(path string) int64 {
@@ -109,7 +113,11 @@ func (ft *FileTree) SetSize(path string, size int64) {
 func (ft *FileTree) Attr(path string) (os.FileInfo, error) {
 	info, err := ft.pf.FileAttr(path)
 	if err != nil {
-		return nil, err
+		info, err = ft.pf.FileAttr(path + ".d")
+		if err != nil {
+			return nil, err
+		}
+		return &tranFileinfo{inner: info}, nil
 	}
 	return &tranFileinfo{inner: info}, nil
 

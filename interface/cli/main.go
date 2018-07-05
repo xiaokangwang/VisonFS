@@ -29,9 +29,9 @@ func main() {
 	insi := fi.Launch()
 	switch os.Args[2] {
 	case "mkdir":
-		insi.Mkdir(os.Args[3], os.Args[4])
+		insi.Mkdir(os.Args[3])
 	case "rm":
-		insi.Rm(os.Args[3], os.Args[4])
+		insi.Rm(os.Args[3])
 	case "push":
 		task := transfer.NewTask(os.Args[3], os.Args[4], true, insi)
 		ProgressTask(task, fi)
@@ -50,6 +50,7 @@ func main() {
 		ProgressTask(&Task, fi)
 	case "purge":
 		fi.Purge()
+	case "mount":
 	}
 }
 func ProgressTask(task *transfer.Transfer, fi instanceadm.Instance) {
