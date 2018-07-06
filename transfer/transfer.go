@@ -61,7 +61,7 @@ func (t *Transfer) progressUpload() {
 	r := io.LimitReader(lfile, Blocksize)
 	buf := make([]byte, Blocksize)
 	n, err := io.ReadFull(r, buf)
-	if err != nil {
+	if err != nil && err != io.ErrUnexpectedEOF {
 		panic(err)
 	}
 	lfile.Close()
