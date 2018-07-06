@@ -37,6 +37,7 @@ func (t *Transfer) ProcessBlock() {
 			//none
 		}
 		t.LastTransferedBlock++
+		return
 	}
 	if t.Upload {
 		t.progressUpload()
