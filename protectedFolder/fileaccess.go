@@ -99,7 +99,7 @@ dir_for:
 				if resi.Name() == dir[k] {
 					dir[k] = resi.(*decryptFileinfo).inner.Name()
 					knowndir += "/"
-					knowndir += resi.Name()
+					knowndir += resi.(*decryptFileinfo).inner.Name()
 					continue dir_for
 				}
 			}
