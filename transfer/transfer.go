@@ -23,7 +23,7 @@ func (t *Transfer) UploadMeta() {
 	t.filei.SetSize(t.RFile, t.Size)
 }
 func (t *Transfer) BlockSum() int64 {
-	return (t.Size / Blocksize) + 2
+	return (t.Size / Blocksize) + 1
 }
 
 func (t *Transfer) ProcessBlock() {
