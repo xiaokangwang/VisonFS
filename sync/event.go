@@ -53,7 +53,7 @@ func (ps *PendingSync) BlobGet(hash string) []byte {
 		if k == 0 {
 			cookiei = cookie[0]
 		} else {
-			fc, err := ps.QueueFileNetworkDownload(cookie[k])
+			fc, err := ps.QueueFileNetworkDownload("blob/" + cookie[k])
 			if err != nil {
 				panic(err)
 			}
