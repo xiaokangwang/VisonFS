@@ -11,9 +11,9 @@ import (
 	"github.com/xiaokangwang/VisonFS/file"
 )
 
-func NewVisonFS() pathfs.FileSystem {
+func NewVisonFS(filei *file.FileTree) pathfs.FileSystem {
 
-	return (*visonFS)(nil)
+	return &visonFS{filei: filei}
 
 }
 
