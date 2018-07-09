@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -78,6 +77,7 @@ func (da *DelegatedAccess) ReadFile(path string) ([]byte, error) {
 	}
 	var buf bytes.Buffer
 	da.tf.Decrypt(&buf, bytes.NewReader(fc))
+	println(path, string(buf.Bytes()))
 	return buf.Bytes(), err
 }
 func (da *DelegatedAccess) toPath(path string) (string, string) {
@@ -92,14 +92,11 @@ dir_for:
 			if err != nil {
 				panic(err)
 			}
-			for i, resi := range res {
-				if i == 0 {
-					continue
-				}
+			for _, resi := range res {
 				if resi.Name() == dir[k] {
 					dir[k] = resi.(*decryptFileinfo).inner.Name()
-					knowndir += "/"
 					knowndir += resi.(*decryptFileinfo).inner.Name()
+					knowndir += "/"
 					continue dir_for
 				}
 			}
@@ -129,23 +126,38 @@ func (da *DelegatedAccess) ListFile(path string) ([]os.FileInfo, error) {
 	pn, fn := da.toPath(path)
 	dirv := da.root + "/" + pn
 	dir := dirv + "/" + fn
+	fmt.Printf("\n\nLIST %v\n", dirv)
 	var fni []os.FileInfo
-	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		fni = append(fni, &decryptFileinfo{inner: info})
-		return nil
-	})
+	dird, err := ioutil.ReadDir(dir)
+	if err != nil {
+		panic(err)
+		//return err
+	}
+	for _, v := range dird {
+		fni = append(fni, &decryptFileinfo{inner: v, da: da})
+	}
+
+	/*
+		filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+			if info == nil {
+				fmt.Printf("\n\nNOINFO %v\n", path)
+				return nil
+			}
+			fmt.Printf("\n\n%v Dir: %v\n\n", info.Name(), info.IsDir())
+			fni = append(fni, &decryptFileinfo{inner: info, da: da})
+			return nil
+		})*/
 	return fni, nil
 }
 func (da *DelegatedAccess) listFileE(epath string) ([]os.FileInfo, error) {
-	dirv := da.root + "/" + epath
+	dirv := da.root + epath
 	var fni []os.FileInfo
-	filepath.Walk(dirv, func(path string, info os.FileInfo, err error) error {
-		if info == nil {
-			return nil
-		}
-		fni = append(fni, &decryptFileinfo{inner: info, da: da})
-		return nil
-	})
+	dird, err := ioutil.ReadDir(dirv)
+	fmt.Println("dirv:"+dirv, err)
+	for _, v := range dird {
+		fni = append(fni, &decryptFileinfo{inner: v, da: da})
+	}
+
 	return fni, nil
 }
 func (da *DelegatedAccess) RemoveFile(path string) error {
@@ -165,7 +177,7 @@ func (da *DelegatedAccess) FileAttr(path string) (os.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &decryptFileinfo{inner: info}, nil
+	return &decryptFileinfo{inner: info, da: da}, nil
 }
 
 type decryptFileinfo struct {
@@ -180,6 +192,7 @@ func (df *decryptFileinfo) Name() string {
 	fmt.Println(df)
 	fmt.Println(df.da)
 	fmt.Println(df.inner)
+	fmt.Println("decrypt:" + df.da.ReadToken(df.inner.Name()))
 	return df.da.ReadToken(df.inner.Name())
 }
 func (df *decryptFileinfo) Size() int64      { return df.inner.Size() }

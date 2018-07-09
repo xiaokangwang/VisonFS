@@ -59,7 +59,7 @@ func (df *tranFileinfo) Mode() os.FileMode  { return df.inner.Mode() }
 func (df *tranFileinfo) Name() string {
 	if !df.IsDir() {
 		ddn := df.inner.Name()
-		return ddn[:len(ddn)-3]
+		return ddn[:len(ddn)-2]
 	}
 	return df.inner.Name()
 }
@@ -100,13 +100,13 @@ func (ft *FileTree) Rm(path string) {
 	ft.gitctli.NewVerison()
 }
 func (ft *FileTree) GetSize(path string) int64 {
-	f, _ := ft.pf.ReadFile(path + "/size")
+	f, _ := ft.pf.ReadFile(path + ".d/size")
 	s, _ := strconv.ParseInt(string(f), 10, 64)
 	return s
 }
 func (ft *FileTree) SetSize(path string, size int64) {
 	s := strconv.FormatInt(size, 10)
-	ft.pf.WriteFile(path+"/size", []byte(s))
+	ft.pf.WriteFile(path+".d/size", []byte(s))
 	ft.gitctli.NewVerison()
 }
 

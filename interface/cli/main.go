@@ -53,6 +53,17 @@ func main() {
 	case "purge":
 		fi.Purge()
 	case "mount":
+	case "ls":
+		dir, err := insi.Ls(os.Args[3])
+		if err != nil {
+			panic(err)
+		}
+		for _, v := range dir {
+			if v == nil {
+				continue
+			}
+			fmt.Printf("\n\n%v Dir: %v\n\n", v.Name(), v.IsDir())
+		}
 	}
 }
 func ProgressTask(task *transfer.Transfer, fi instanceadm.Instance) {
