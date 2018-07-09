@@ -73,13 +73,16 @@ func (t *Transfer) progressUpload() {
 }
 func (t *Transfer) progressDownload() {
 	block := t.filei.GetFileBlock(t.RFile, int(t.LastTransferedBlock+1))
-	lfile, err := os.OpenFile(t.File, os.O_APPEND|os.O_CREATE, 0700)
+	lfile, err := os.OpenFile(t.File, os.O_RDWR, 0700)
 	if err != nil {
 		panic(err)
 	}
 	loc := t.LastTransferedBlock * Blocksize
 	lfile.Seek(loc, 0)
-	io.Copy(lfile, bytes.NewReader(block))
+	_, err = io.Copy(lfile, bytes.NewReader(block))
+	if err != nil {
+		panic(err)
+	}
 	lfile.Close()
 	t.LastTransferedBlock++
 }
