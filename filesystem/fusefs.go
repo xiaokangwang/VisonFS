@@ -11,7 +11,7 @@ import (
 	"github.com/xiaokangwang/VisonFS/file"
 )
 
-func NewVisonFS(filei *file.FileTree) pathfs.FileSystem {
+func newVisonFS(filei *file.FileTree) pathfs.FileSystem {
 
 	return &visonFS{filei: filei}
 
@@ -245,12 +245,6 @@ type visonFile struct {
 // NewDefaultFile returns a File instance that returns ENOSYS for
 
 // every operation.
-
-func NewVisonFile() nodefs.File {
-
-	return (*visonFile)(nil)
-
-}
 
 func (f *visonFile) SetInode(*nodefs.Inode) {
 

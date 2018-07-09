@@ -4,10 +4,12 @@ import (
 	"encoding/gob"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/ld9999999999/go-interfacetools"
 	"github.com/nahanni/go-ucl"
 	"github.com/xiaokangwang/VisonFS/conf"
+	"github.com/xiaokangwang/VisonFS/filesystem"
 	"github.com/xiaokangwang/VisonFS/instanceadm"
 	"github.com/xiaokangwang/VisonFS/transfer"
 )
@@ -53,6 +55,8 @@ func main() {
 	case "purge":
 		fi.Purge()
 	case "mount":
+		filesystem.Mount(insi, os.Args[3])
+		time.Sleep(1 * time.Second)
 	case "ls":
 		dir, err := insi.Ls(os.Args[3])
 		if err != nil {
