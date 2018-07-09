@@ -6,6 +6,7 @@ import (
 
 	"github.com/hanwen/go-fuse/fuse"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/hanwen/go-fuse/fuse/nodefs"
 	"github.com/hanwen/go-fuse/fuse/pathfs"
 	"github.com/xiaokangwang/VisonFS/file"
@@ -38,7 +39,7 @@ func (fs *visonFS) GetAttr(name string, context *fuse.Context) (*fuse.Attr, fuse
 		if attr.IsDir() {
 			a.Mode = fuse.S_IFDIR | 0700
 		} else {
-			a.Mode = 0700
+			a.Mode = fuse.S_IFREG | 0700
 			a.Size = uint64(fs.filei.GetSize(name))
 		}
 		return a, fuse.OK
@@ -134,7 +135,7 @@ func (fs *visonFS) Chown(name string, uid uint32, gid uint32, context *fuse.Cont
 
 func (fs *visonFS) Truncate(name string, offset uint64, context *fuse.Context) (code fuse.Status) {
 	_, okerr := fs.filei.Attr(name)
-	if okerr != nil {
+	if okerr == nil {
 		f := fs.openfile(name)
 		ret := f.Truncate(uint64(offset))
 		f.Release()
@@ -148,7 +149,7 @@ func (fs *visonFS) Truncate(name string, offset uint64, context *fuse.Context) (
 func (fs *visonFS) Open(name string, flags uint32, context *fuse.Context) (file nodefs.File, code fuse.Status) {
 
 	_, okerr := fs.filei.Attr(name)
-	if okerr != nil {
+	if okerr == nil {
 		f := fs.openfile(name)
 		return f, fuse.OK
 	}
@@ -171,11 +172,12 @@ func (fs *visonFS) OpenDir(name string, context *fuse.Context) (stream []fuse.Di
 		if v.IsDir() {
 			st.Mode = fuse.S_IFDIR | 0700
 		} else {
-			st.Mode = 0700
+			st.Mode = fuse.S_IFREG | 0700
 		}
 		stream = append(stream, *st)
 	}
-	println(stream)
+	println("DIRLSTRESULT ", stream)
+	spew.Dump(stream)
 	return stream, fuse.OK
 
 }
@@ -196,8 +198,12 @@ func (fs *visonFS) Access(name string, mode uint32, context *fuse.Context) (code
 
 func (fs *visonFS) Create(name string, flags uint32, mode uint32, context *fuse.Context) (file nodefs.File, code fuse.Status) {
 
-	f := fs.openfile(name)
-	return f, fuse.OK
+	_, okerr := fs.filei.Attr(name)
+	if okerr == nil {
+		f := fs.openfile(name)
+		return f, fuse.OK
+	}
+	return nil, fuse.ENOENT
 
 }
 
@@ -228,7 +234,7 @@ func (fs *visonFS) openfile(name string) *visonFile {
 		size = 0
 		fs.filei.SetSize(name, 0)
 	}
-	file := &visonFile{bufferblock: -1, size: size, path: name, opencount: 1}
+	file := &visonFile{fs: fs, filei: fs.filei, bufferblock: -1, size: size, path: name, opencount: 1}
 	return file
 }
 
