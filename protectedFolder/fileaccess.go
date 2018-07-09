@@ -93,6 +93,7 @@ dir_for:
 				panic(err)
 			}
 			for _, resi := range res {
+				fmt.Println("Comparing:", resi.Name(), dir[k])
 				if resi.Name() == dir[k] {
 					dir[k] = resi.(*decryptFileinfo).inner.Name()
 					knowndir += resi.(*decryptFileinfo).inner.Name()
@@ -126,12 +127,14 @@ func (da *DelegatedAccess) ListFile(path string) ([]os.FileInfo, error) {
 	pn, fn := da.toPath(path)
 	dirv := da.root + "/" + pn
 	dir := dirv + "/" + fn
+	if path == "" {
+		dir = da.root + "/"
+	}
 	fmt.Printf("\n\nLIST %v\n", dirv)
 	var fni []os.FileInfo
 	dird, err := ioutil.ReadDir(dir)
 	if err != nil {
-		panic(err)
-		//return err
+		return nil, err
 	}
 	for _, v := range dird {
 		fni = append(fni, &decryptFileinfo{inner: v, da: da})

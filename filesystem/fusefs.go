@@ -34,7 +34,7 @@ func (fs *visonFS) GetAttr(name string, context *fuse.Context) (*fuse.Attr, fuse
 	}
 
 	attr, err := fs.filei.Attr(name)
-	if err != nil {
+	if err == nil {
 		if attr.IsDir() {
 			a.Mode = fuse.S_IFDIR | 0700
 		} else {
@@ -175,6 +175,7 @@ func (fs *visonFS) OpenDir(name string, context *fuse.Context) (stream []fuse.Di
 		}
 		stream = append(stream, *st)
 	}
+	println(stream)
 	return stream, fuse.OK
 
 }
