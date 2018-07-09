@@ -8,9 +8,9 @@ import (
 
 func isExist(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return true
+		return false
 	}
-	return false
+	return true
 }
 func IsExist(path string) bool {
 	return isExist(path)
