@@ -198,12 +198,8 @@ func (fs *visonFS) Access(name string, mode uint32, context *fuse.Context) (code
 
 func (fs *visonFS) Create(name string, flags uint32, mode uint32, context *fuse.Context) (file nodefs.File, code fuse.Status) {
 
-	_, okerr := fs.filei.Attr(name)
-	if okerr == nil {
-		f := fs.openfile(name)
-		return f, fuse.OK
-	}
-	return nil, fuse.ENOENT
+	f := fs.openfile(name)
+	return f, fuse.OK
 
 }
 
@@ -324,7 +320,7 @@ func (f *visonFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 	if f.size < int64(off+int64(copysum)) {
 		f.size = int64(off + int64(copysum))
 	}
-	return uint32(copysum), fuse.ENOSYS
+	return uint32(copysum), fuse.OK
 
 }
 
