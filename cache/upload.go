@@ -41,7 +41,7 @@ func Purge(path string) {
 }
 func FindDrity(path string) []string {
 	var uploading []string
-	filepath.Walk(path, func(pathi string, f os.FileInfo, err error) error {
+	filepath.Walk(path+"/blob/", func(pathi string, f os.FileInfo, err error) error {
 		if strings.HasSuffix(pathi, ".dirty") {
 			s := pathi[:len(pathi)-len(".dirty")]
 			l := s[len(path)+1:]
