@@ -59,8 +59,14 @@ func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) Netwo
 		log.Fatalf("Unable to retrieve files: %v", err)
 	}
 	did := r.Files[0].Id
-	resp, err := ntq.srv.Files.Get(did).AcknowledgeAbuse(true).Download()
+	abuseFlag := false
+EnqueueDownloadTask_download:
+	resp, err := ntq.srv.Files.Get(did).AcknowledgeAbuse(abuseFlag).Download()
 	if err != nil {
+		if !abuseFlag {
+			abuseFlag = true
+			goto EnqueueDownloadTask_download
+		}
 		panic(err)
 	}
 	c, err := ioutil.ReadAll(resp.Body)
