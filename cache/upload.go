@@ -26,9 +26,15 @@ func RemoveDirty(path string) {
 	os.Remove(path + ".dirty")
 }
 func Purge(path string) {
-	filepath.Walk(path, func(pathi string, f os.FileInfo, err error) error {
+	filepath.Walk(path+"/blob/", func(pathi string, f os.FileInfo, err error) error {
 		if !IsDirty(pathi) && !strings.HasSuffix(pathi, ".dirty") {
-			os.Remove(pathi)
+			if f.IsDir() {
+				return nil
+			}
+			err := os.Remove(pathi)
+			if err != nil {
+				panic(err)
+			}
 		}
 		return nil
 	})
