@@ -82,4 +82,5 @@ func ProgressTask(task *transfer.Transfer, fi instanceadm.Instance) {
 		f.Close()
 		fi.Purge()
 	}
+	os.Remove("resume")
 }
