@@ -404,4 +404,14 @@ func (f *visonFile) Allocate(off uint64, size uint64, mode uint32) (code fuse.St
 
 }
 
+func (f *visonFile) GetLk(owner uint64, lk *fuse.FileLock, flags uint32, out *fuse.FileLock) (code fuse.Status) {
+	return fuse.ENOSYS
+}
+func (f *visonFile) SetLk(owner uint64, lk *fuse.FileLock, flags uint32) (code fuse.Status) {
+	return fuse.ENOSYS
+}
+func (f *visonFile) SetLkw(owner uint64, lk *fuse.FileLock, flags uint32) (code fuse.Status) {
+	return fuse.ENOSYS
+}
+
 const Blocksize = 1024 * 1024 * 16
