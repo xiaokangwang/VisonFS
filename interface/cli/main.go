@@ -49,7 +49,7 @@ func main() {
 		}
 		o := gob.NewDecoder(f)
 		var Task transfer.Transfer
-		o.Decode(Task)
+		o.Decode(&Task)
 		Task.PushFileInstance(insi)
 		ProgressTask(&Task, fi)
 	case "purge":
