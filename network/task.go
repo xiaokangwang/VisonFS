@@ -45,9 +45,11 @@ func (ntq *NetworkTaskQueue) EnqueueUploadTask(task NetworkUploadTask) {
 	var file drive.File
 	file.Name = task.Filename
 	file.Parents = []string{ntq.uploadprefix}
+EnqueueUploadTask_retry:
 	_, err = ntq.srv.Files.Create(&file).Media(bytes.NewReader(task.Content)).Do()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		goto EnqueueUploadTask_retry
 	}
 }
 func (ntq *NetworkTaskQueue) EnqueueDownloadTask(task NetworkDownloadTask) NetworkDownloadTaskResult {
