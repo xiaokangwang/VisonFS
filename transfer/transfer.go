@@ -73,7 +73,7 @@ func (t *Transfer) progressUpload() {
 }
 func (t *Transfer) progressDownload() {
 	block := t.filei.GetFileBlock(t.RFile, int(t.LastTransferedBlock+1))
-	lfile, err := os.OpenFile(t.File, os.O_RDWR, 0700)
+	lfile, err := os.OpenFile(t.File, os.O_RDWR|os.O_CREATE, 0700)
 	if err != nil {
 		panic(err)
 	}

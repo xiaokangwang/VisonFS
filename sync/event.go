@@ -113,6 +113,7 @@ func (ps *PendingSync) QueueFileNetworkDownload(fname string) ([]byte, error) {
 	ou := ps.nw.EnqueueDownloadTask(dt)
 	//Write cache
 	ps.crlo.Lock()
+	ioutil.WriteFile(ps.cacheDir+"/"+fname, ou.Content, 0700)
 	ps.crlo.Unlock()
 	return ou.Content, nil
 }
