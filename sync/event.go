@@ -35,13 +35,20 @@ func (ps *PendingSync) BlobUpload(content []byte) string {
 	//transform
 	out, cookie := ps.tf.Advance(content)
 	syncookie := cookie
+	dispathgroup := &sync.WaitGroup{}
+
 	for n := range out {
 		sum := sha3.Sum256(out[n])
 		sumx := hex.EncodeToString(sum[:])
-		ps.QueueFileNetworkUpload("blob/"+sumx, out[n])
+		dispathgroup.Add(1)
+		go func() {
+			ps.QueueFileNetworkUpload("blob/"+sumx, out[n])
+			dispathgroup.Done()
+		}()
 		syncookie += "$"
 		syncookie += sumx
 	}
+	dispathgroup.Wait()
 	return syncookie
 
 }
